@@ -1,16 +1,16 @@
 # DONE
 
 * Run app and quit without errors.
+* Print an at sign.
 
 # WIP
 
-* Print an at sign. &lt;--- current release goal
+* Include ncurses or something.
 
 # TODO
 
-* Include ncurses or something.
 * Print the at sign in ncurses.
-* Clear the screen in ncurses.
+* Clear the screen in ncurses. &lt;--- current release goal
 * Move the at sign right in ncurses.
 * Move the at sign left in ncurses.
 * Move the at sign up and down in ncurses.
