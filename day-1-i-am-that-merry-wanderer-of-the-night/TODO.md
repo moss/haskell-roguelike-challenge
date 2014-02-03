@@ -1,10 +1,12 @@
 # DONE
 
+
 # WIP
+
+* Run app and quit without errors.
 
 # TODO
 
-* Run app and quit without errors.
 * Print an at sign. &lt;--- current release goal
 * Include ncurses or something.
 * Print the at sign in ncurses.
