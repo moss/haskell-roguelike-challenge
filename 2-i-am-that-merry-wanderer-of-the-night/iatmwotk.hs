@@ -15,4 +15,7 @@ main = do
     putChar '@'
     setCursorPosition 26 0
     command <- getChar
+    setCursorPosition 12 40
+    putChar ' '
+    setCursorPosition 26 0
     return ()

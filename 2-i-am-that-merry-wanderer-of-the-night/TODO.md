@@ -6,13 +6,13 @@
 * Clear the screen in System.Console.ANSI &lt;--- current release goal
 * Print the at sign in System.Console.ANSI
 * Run and wait for input before quitting.
+* Clear the at sign after input.
 
 # WIP
 
 
 # TODO
 
-* Clear the at sign after input.
 * Move the at sign right in System.Console.ANSI
 * Move the at sign left in System.Console.ANSI
 * Move the at sign up and down in System.Console.ANSI
