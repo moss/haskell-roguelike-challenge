@@ -1,4 +1,5 @@
 module IAmThatMerryWandererOfTheNight where
+import Control.Monad
 import System.Console.ANSI
 import System.IO
 
@@ -8,14 +9,19 @@ initScreen = do
     hSetEcho stdin False
     clearScreen
 
+parseInput = takeWhile (/= 'q')
+
 main :: IO ()
 main = do
     initScreen
     setCursorPosition 12 40
     putChar '@'
     setCursorPosition 26 0
-    command <- getChar
-    setCursorPosition 12 40
-    putChar ' '
-    setCursorPosition 26 0
-    return ()
+    userInput <- getContents
+    foldM_ updateScreen 1 (parseInput userInput) where
+      updateScreen age command = do
+        setCursorPosition 12 40
+        putChar ' '
+        setCursorPosition 26 0
+        print age
+        return (age + 1)

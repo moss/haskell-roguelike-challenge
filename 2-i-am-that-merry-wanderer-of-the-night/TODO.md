@@ -7,10 +7,10 @@
 * Print the at sign in System.Console.ANSI
 * Run and wait for input before quitting.
 * Clear the at sign after input.
+* Accept more than one character of input, and give some feedback.
 
 # WIP
 
-* Accept more than one character of input, and give some feedback.
 
 # TODO
 
