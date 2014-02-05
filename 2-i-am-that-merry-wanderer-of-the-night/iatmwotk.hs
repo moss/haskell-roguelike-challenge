@@ -3,15 +3,21 @@ import Control.Monad
 import System.Console.ANSI
 import System.IO
 
+type Position = (Int, Int)
+data Command = Left | Right | Quit | Unknown deriving (Eq)
+
 initScreen = do
     hSetBuffering stdin NoBuffering
     hSetBuffering stdout NoBuffering
     hSetEcho stdin False
     clearScreen
 
-parseInput = takeWhile (/= 'q')
+parseInput :: [Char] -> [Command]
+parseInput chars = takeWhile (/= Quit) $ map parseCommand chars
 
-type Position = (Int, Int)
+parseCommand :: Char -> Command
+parseCommand 'q' = Quit
+parseCommand _ = Unknown
 
 draw (xpos, ypos) = do
     setCursorPosition xpos ypos
@@ -22,7 +28,6 @@ clear (xpos, ypos) = do
     setCursorPosition xpos ypos
     putChar ' '
     setCursorPosition 26 0
-
 
 advance (xpos, ypos) = do
     (xpos, ypos + 1)

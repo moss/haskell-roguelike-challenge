@@ -12,10 +12,10 @@
 
 # WIP
 
+* Move the at sign left on h and right on l.
 
 # TODO
 
-* Move the at sign left on h and right on l.
 * Move the at sign up and down on k and j.
 * Adjust to the current screen size.
 
