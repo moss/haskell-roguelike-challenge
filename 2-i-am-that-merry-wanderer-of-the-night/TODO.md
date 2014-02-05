@@ -9,10 +9,10 @@
 * Clear the at sign after input.
 * Accept more than one character of input, and give some feedback.
 * Move the at sign right on any input.
+* Move the at sign left on h and right on l.
 
 # WIP
 
-* Move the at sign left on h and right on l.
 
 # TODO
 
