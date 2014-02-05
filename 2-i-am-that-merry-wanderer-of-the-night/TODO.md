@@ -10,10 +10,10 @@
 * Accept more than one character of input, and give some feedback.
 * Move the at sign right on any input.
 * Move the at sign left on h and right on l.
+* Move the at sign up and down on k and j.
 
 # WIP
 
-* Move the at sign up and down on k and j.
 
 # TODO
 
