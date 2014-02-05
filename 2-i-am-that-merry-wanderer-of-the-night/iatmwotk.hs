@@ -21,18 +21,18 @@ parseCommand 'h' = MoveLeft
 parseCommand 'l' = MoveRight
 parseCommand _ = Unknown
 
-draw (xpos, ypos) = do
-    setCursorPosition xpos ypos
+draw (row, col) = do
+    setCursorPosition row col
     putChar '@'
     setCursorPosition 26 0
 
-clear (xpos, ypos) = do
-    setCursorPosition xpos ypos
+clear (row, col) = do
+    setCursorPosition row col
     putChar ' '
     setCursorPosition 26 0
 
-advance MoveLeft (xpos, ypos) = (xpos, ypos - 1)
-advance MoveRight (xpos, ypos) = (xpos, ypos + 1)
+advance MoveLeft (row, col) = (row, col - 1)
+advance MoveRight (row, col) = (row, col + 1)
 advance _ state = state
 
 main :: IO ()

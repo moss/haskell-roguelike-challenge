@@ -13,10 +13,10 @@
 
 # WIP
 
+* Move the at sign up and down on k and j.
 
 # TODO
 
-* Move the at sign up and down on k and j.
 * Adjust to the current screen size.
 
 # Notes
