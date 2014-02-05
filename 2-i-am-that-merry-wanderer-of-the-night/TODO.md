@@ -8,10 +8,10 @@
 * Run and wait for input before quitting.
 * Clear the at sign after input.
 * Accept more than one character of input, and give some feedback.
+* Move the at sign right on any input.
 
 # WIP
 
-* Move the at sign right on any input.
 
 # TODO
 

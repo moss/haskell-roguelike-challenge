@@ -13,14 +13,28 @@ parseInput = takeWhile (/= 'q')
 
 type Position = (Int, Int)
 
+draw (xpos, ypos) = do
+    setCursorPosition xpos ypos
+    putChar '@'
+    setCursorPosition 26 0
+
+clear (xpos, ypos) = do
+    setCursorPosition xpos ypos
+    putChar ' '
+    setCursorPosition 26 0
+
+
+advance (xpos, ypos) = do
+    (xpos, ypos + 1)
+
 main :: IO ()
 main = do
     initScreen
-    let initialState = (12, 40)
+    draw (12, 40)
     userInput <- getContents
     foldM_ updateScreen (12, 40) (parseInput userInput) where
-      updateScreen (xpos, ypos) command = do
-        setCursorPosition xpos ypos
-        putChar '@'
-        setCursorPosition 26 0
-        return (xpos, ypos + 1)
+      updateScreen curState command = do
+        let newState = advance curState
+        clear curState
+        draw newState
+        return newState
