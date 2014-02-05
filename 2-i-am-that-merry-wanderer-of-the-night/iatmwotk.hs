@@ -11,17 +11,16 @@ initScreen = do
 
 parseInput = takeWhile (/= 'q')
 
+type Position = (Int, Int)
+
 main :: IO ()
 main = do
     initScreen
-    setCursorPosition 12 40
-    putChar '@'
-    setCursorPosition 26 0
+    let initialState = (12, 40)
     userInput <- getContents
-    foldM_ updateScreen 1 (parseInput userInput) where
-      updateScreen age command = do
-        setCursorPosition 12 40
-        putChar ' '
+    foldM_ updateScreen (12, 40) (parseInput userInput) where
+      updateScreen (xpos, ypos) command = do
+        setCursorPosition xpos ypos
+        putChar '@'
         setCursorPosition 26 0
-        print age
-        return (age + 1)
+        return (xpos, ypos + 1)
