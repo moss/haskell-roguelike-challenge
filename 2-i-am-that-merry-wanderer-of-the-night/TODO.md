@@ -10,12 +10,13 @@
 
 # WIP
 
+* Accept more than one character of input, and give some feedback.
 
 # TODO
 
-* Move the at sign right in System.Console.ANSI
-* Move the at sign left in System.Console.ANSI
-* Move the at sign up and down in System.Console.ANSI
+* Move the at sign right on any input.
+* Move the at sign left on h and right on l.
+* Move the at sign up and down on k and j.
 * Adjust to the current screen size.
 
 # Notes
