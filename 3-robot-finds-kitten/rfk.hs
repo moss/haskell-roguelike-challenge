@@ -23,12 +23,19 @@ parseCommand 'k' = MoveUp
 parseCommand 'l' = MoveRight
 parseCommand _ = Unknown
 
-advance :: Command -> Position -> Position
-advance MoveLeft (row, col) = (row, col - 1)
-advance MoveUp (row, col) = (row - 1, col)
-advance MoveDown (row, col) = (row + 1, col)
-advance MoveRight (row, col) = (row, col + 1)
-advance _ state = state
+advance :: Position -> Command -> Position
+advance (row, col) MoveLeft = (row, col - 1)
+advance (row, col) MoveUp = (row - 1, col)
+advance (row, col) MoveDown = (row + 1, col)
+advance (row, col) MoveRight = (row, col + 1)
+advance state _ = state
+
+playGame :: [Char] -> Position -> [Position]
+playGame userInput initState =
+    scanl advance initState $ parseInput userInput
+
+transitions :: [a] -> [(a, a)]
+transitions list = zip ([head list] ++ list) list
 
 -- Here be IO Monad dragons
 
@@ -55,9 +62,8 @@ main = do
     let kitten = (13, 17)
     initScreen robot kitten
     userInput <- getContents
-    foldM_ updateScreen robot (parseInput userInput) where
-      updateScreen curState command = do
-        let newState = advance command curState
-        clear curState
+    forM_ (transitions (playGame userInput robot)) updateScreen where
+      updateScreen (oldState, newState) = do
+        clear oldState
         drawR newState
         return newState
