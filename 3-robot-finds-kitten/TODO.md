@@ -1,13 +1,14 @@
 # DONE
 
 * Show the kitten on the map.
+* Show a message when you pass the kitten.
 
 # WIP
 
-* Find a kitten and game ends.
 
 # TODO
 
+* Find a kitten and game ends.
 * When you find the kitten it shows a happy message.
 * Show another more different object.
 * Can't walk through object.

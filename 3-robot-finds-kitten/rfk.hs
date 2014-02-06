@@ -70,4 +70,6 @@ main = do
       updateScreen (oldState, newState) = do
         clear (robot oldState)
         drawR (robot newState)
+        when (robot newState == (13, 17))
+          (putStr "Oh no robot! Where did the kitten go?")
         return newState
