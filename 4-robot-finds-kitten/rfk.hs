@@ -59,6 +59,13 @@ drawR = draw '#'
 drawK = draw 'k'
 clear = draw ' '
 
+updateScreen (oldState, newState) = do
+  clear (robot oldState)
+  drawR (robot newState)
+  when (robot newState == (13, 17))
+    (putStr "Oh no robot! Where did the kitten go?")
+  return newState
+
 main :: IO ()
 main = do
     let robot = (12, 40)
@@ -66,10 +73,4 @@ main = do
     let gameState = Playing robot
     initScreen robot kitten
     userInput <- getContents
-    forM_ (transitions (playGame userInput gameState)) updateScreen where
-      updateScreen (oldState, newState) = do
-        clear (robot oldState)
-        drawR (robot newState)
-        when (robot newState == (13, 17))
-          (putStr "Oh no robot! Where did the kitten go?")
-        return newState
+    forM_ (transitions (playGame userInput gameState)) updateScreen
