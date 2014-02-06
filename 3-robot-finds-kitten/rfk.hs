@@ -1,4 +1,4 @@
-module IAmThatMerryWandererOfTheNight where
+module RobotFindsKitten where
 import Control.Monad
 import System.Console.ANSI
 import System.IO
@@ -12,12 +12,6 @@ data Command = MoveLeft
              | Unknown
              deriving (Eq)
 
-initScreen = do
-    hSetBuffering stdin NoBuffering
-    hSetBuffering stdout NoBuffering
-    hSetEcho stdin False
-    clearScreen
-
 parseInput :: [Char] -> [Command]
 parseInput chars = takeWhile (/= Quit) $ map parseCommand chars
 
@@ -29,6 +23,20 @@ parseCommand 'k' = MoveUp
 parseCommand 'l' = MoveRight
 parseCommand _ = Unknown
 
+advance MoveLeft (row, col) = (row, col - 1)
+advance MoveUp (row, col) = (row - 1, col)
+advance MoveDown (row, col) = (row + 1, col)
+advance MoveRight (row, col) = (row, col + 1)
+advance _ state = state
+
+-- Here be IO Monad dragons
+
+initScreen = do
+    hSetBuffering stdin NoBuffering
+    hSetBuffering stdout NoBuffering
+    hSetEcho stdin False
+    clearScreen
+
 draw (row, col) = do
     setCursorPosition row col
     putChar '@'
@@ -38,12 +46,6 @@ clear (row, col) = do
     setCursorPosition row col
     putChar ' '
     setCursorPosition 26 0
-
-advance MoveLeft (row, col) = (row, col - 1)
-advance MoveUp (row, col) = (row - 1, col)
-advance MoveDown (row, col) = (row + 1, col)
-advance MoveRight (row, col) = (row, col + 1)
-advance _ state = state
 
 main :: IO ()
 main = do
