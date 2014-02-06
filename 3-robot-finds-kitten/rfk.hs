@@ -4,6 +4,7 @@ import System.Console.ANSI
 import System.IO
 
 type Position = (Int, Int)
+data GameState = Playing { robot :: Position } | Over deriving (Eq)
 data Command = MoveLeft
              | MoveDown
              | MoveUp
@@ -23,16 +24,16 @@ parseCommand 'k' = MoveUp
 parseCommand 'l' = MoveRight
 parseCommand _ = Unknown
 
-advance :: Position -> Command -> Position
-advance (row, col) MoveLeft = (row, col - 1)
-advance (row, col) MoveUp = (row - 1, col)
-advance (row, col) MoveDown = (row + 1, col)
-advance (row, col) MoveRight = (row, col + 1)
-advance _ Quit = (0, 0)
+advance :: GameState -> Command -> GameState
+advance (Playing (row, col)) MoveLeft = Playing (row, col - 1)
+advance (Playing (row, col)) MoveUp = Playing (row - 1, col)
+advance (Playing (row, col)) MoveDown = Playing (row + 1, col)
+advance (Playing (row, col)) MoveRight = Playing (row, col + 1)
+advance _ Quit = Over
 advance state _ = state
 
-playGame :: [Char] -> Position -> [Position]
-playGame userInput initState = takeWhile (/= (0, 0)) $
+playGame :: [Char] -> GameState -> [GameState]
+playGame userInput initState = takeWhile (/= Over) $
     scanl advance initState $
     parseInput userInput
 
@@ -62,10 +63,11 @@ main :: IO ()
 main = do
     let robot = (12, 40)
     let kitten = (13, 17)
+    let gameState = Playing robot
     initScreen robot kitten
     userInput <- getContents
-    forM_ (transitions (playGame userInput robot)) updateScreen where
+    forM_ (transitions (playGame userInput gameState)) updateScreen where
       updateScreen (oldState, newState) = do
-        clear oldState
-        drawR newState
+        clear (robot oldState)
+        drawR (robot newState)
         return newState
