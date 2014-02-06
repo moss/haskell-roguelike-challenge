@@ -13,7 +13,7 @@ data Command = MoveLeft
              deriving (Eq)
 
 parseInput :: [Char] -> [Command]
-parseInput chars = takeWhile (/= Quit) $ map parseCommand chars
+parseInput chars = map parseCommand chars
 
 parseCommand :: Char -> Command
 parseCommand 'q' = Quit
@@ -28,11 +28,13 @@ advance (row, col) MoveLeft = (row, col - 1)
 advance (row, col) MoveUp = (row - 1, col)
 advance (row, col) MoveDown = (row + 1, col)
 advance (row, col) MoveRight = (row, col + 1)
+advance _ Quit = (0, 0)
 advance state _ = state
 
 playGame :: [Char] -> Position -> [Position]
-playGame userInput initState =
-    scanl advance initState $ parseInput userInput
+playGame userInput initState = takeWhile (/= (0, 0)) $
+    scanl advance initState $
+    parseInput userInput
 
 transitions :: [a] -> [(a, a)]
 transitions list = zip ([head list] ++ list) list
