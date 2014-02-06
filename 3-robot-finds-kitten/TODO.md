@@ -6,11 +6,13 @@
 
 # TODO
 
-* Show an object of some sort on the map.
-* Interact with object.
+* Show the kitten on the map.
+* Find a kitten and game ends.
+* When you find the kitten it shows a happy message.
+* Show another more different object.
+* Can't walk through object.
+* Says something when you interact with object (by walking at it).
 * Show two objects.
-* One object is a kitten.
-* Find a kitten and win.
 * Random representation of objects.
 * Random description of NKOs.
 * Random positions of objects.
