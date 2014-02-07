@@ -24,11 +24,15 @@ parseCommand 'k' = MoveUp
 parseCommand 'l' = MoveRight
 parseCommand _ = Unknown
 
+moveRobot :: (Int, Int) -> GameState -> GameState
+moveRobot (rowDelta, colDelta) Playing { robot = (row, col) } =
+    Playing { robot = (row + rowDelta, col + colDelta) }
+
 advance :: GameState -> Command -> GameState
-advance (Playing (row, col)) MoveLeft = Playing (row, col - 1)
-advance (Playing (row, col)) MoveUp = Playing (row - 1, col)
-advance (Playing (row, col)) MoveDown = Playing (row + 1, col)
-advance (Playing (row, col)) MoveRight = Playing (row, col + 1)
+advance state MoveLeft = moveRobot (0, -1) state
+advance state MoveUp = moveRobot (-1, 0) state
+advance state MoveDown = moveRobot (1, 0) state
+advance state MoveRight = moveRobot (0, 1) state
 advance _ Quit = Over
 advance state _ = state
 
