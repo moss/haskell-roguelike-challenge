@@ -74,6 +74,7 @@ initScreen (Playing robot kitten) = do
     clearScreen
     drawR robot
     drawK kitten
+    drawS (15, 20) 
 
 draw char (row, col) = do
     setCursorPosition row col
@@ -82,6 +83,7 @@ draw char (row, col) = do
 
 drawR = draw '#'
 drawK = draw 'k'
+drawS = draw 's'
 clear = draw ' '
 
 updateScreen (_, Over) = do putStrLn "Goodbye!"
