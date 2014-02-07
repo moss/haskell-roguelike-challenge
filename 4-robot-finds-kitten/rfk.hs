@@ -26,8 +26,8 @@ parseCommand 'l' = MoveRight
 parseCommand _ = Unknown
 
 moveRobot :: (Int, Int) -> GameState -> GameState
-moveRobot (rowDelta, colDelta) Playing { robot = (row, col) } =
-    Playing { robot = (row + rowDelta, col + colDelta) }
+moveRobot (rowDelta, colDelta) Playing { robot = (row, col), kitten = k } =
+    Playing { robot = (row + rowDelta, col + colDelta), kitten = k }
 
 advance :: GameState -> Command -> GameState
 advance state MoveLeft = moveRobot (0, -1) state
