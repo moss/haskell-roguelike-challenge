@@ -27,7 +27,8 @@ parseCommand _ = Unknown
 
 moveRobot :: (Int, Int) -> GameState -> GameState
 moveRobot (rowDelta, colDelta) Playing { robot = (row, col), kitten = k } =
-    Playing { robot = (row + rowDelta, col + colDelta), kitten = k }
+    let newR = (row + rowDelta, col + colDelta) in
+    if (k == newR) then Over else Playing { robot = newR, kitten = k }
 
 advance :: GameState -> Command -> GameState
 advance state MoveLeft = moveRobot (0, -1) state
@@ -67,8 +68,6 @@ clear = draw ' '
 updateScreen (oldState, newState) = do
   clear (robot oldState)
   drawR (robot newState)
-  when (robot newState == (13, 17))
-    (putStr "Oh no robot! Where did the kitten go?")
   return newState
 
 main :: IO ()

@@ -1,8 +1,9 @@
 # DONE
 
+* Find a kitten and game ends.
+
 # WIP
 
-* Find a kitten and game ends.
 
 # TODO
 
