@@ -4,7 +4,8 @@ import System.Console.ANSI
 import System.IO
 
 type Position = (Int, Int)
-data GameState = Playing { robot :: Position } | Over deriving (Eq)
+data GameState = Playing { robot :: Position, kitten :: Position }
+               | Over deriving (Eq)
 data Command = MoveLeft
              | MoveDown
              | MoveUp
@@ -74,7 +75,7 @@ main :: IO ()
 main = do
     let robot = (12, 40)
     let kitten = (13, 17)
-    let gameState = Playing robot
+    let gameState = Playing robot kitten
     initScreen robot kitten
     userInput <- getContents
     forM_ (transitions (playGame userInput gameState)) updateScreen
