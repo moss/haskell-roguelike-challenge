@@ -29,7 +29,7 @@ parseCommand _ = Unknown
 moveRobot :: (Int, Int) -> GameState -> GameState
 moveRobot (rowDelta, colDelta) Playing { robot = (row, col), kitten = k, stone = s } =
     let newR = (row + rowDelta, col + colDelta) in
-    if (k == newR) then FoundKitten else Playing { robot = newR, kitten = k, stone = s }
+    if (elem newR [k, s]) then FoundKitten else Playing { robot = newR, kitten = k, stone = s }
 
 advance :: GameState -> Command -> GameState
 advance state MoveLeft = moveRobot (0, -1) state
@@ -45,6 +45,10 @@ advance state _ = state
 --
 -- >>> playGame ['h', 'h', 'h', 'h'] Playing {robot = (2,2), kitten = (2,1), stone = (9,9)}
 -- [Playing {robot = (2,2), kitten = (2,1), stone = (9,9)},FoundKitten]
+-- 
+-- >>> playGame ['h', 'h', 'h', 'h'] Playing {robot = (2,2), kitten = (9,9), stone = (2,1)}
+-- [Playing {robot = (2,2), kitten = (9,9), stone = (2,1)},FoundKitten]
+--
 playGame :: [Char] -> GameState -> [GameState]
 playGame userInput initState = takeThrough (flip elem [Over, FoundKitten]) $
     scanl advance initState $

@@ -1,10 +1,10 @@
 # DONE
 
 * Show another object on the screen.
+* The other object is also a kitten!
 
 # WIP
 
-* The other object is also a kitten!
 
 # TODO
 
