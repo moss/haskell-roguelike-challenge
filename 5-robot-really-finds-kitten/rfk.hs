@@ -4,7 +4,7 @@ import System.Console.ANSI
 import System.IO
 
 type Position = (Int, Int)
-data GameState = Playing { robot :: Position, kitten :: Position }
+data GameState = Playing { robot :: Position, kitten :: Position, stone :: Position }
                | FoundKitten
                | Over deriving (Eq, Show)
 data Command = MoveLeft
@@ -27,9 +27,9 @@ parseCommand 'l' = MoveRight
 parseCommand _ = Unknown
 
 moveRobot :: (Int, Int) -> GameState -> GameState
-moveRobot (rowDelta, colDelta) Playing { robot = (row, col), kitten = k } =
+moveRobot (rowDelta, colDelta) Playing { robot = (row, col), kitten = k, stone = s } =
     let newR = (row + rowDelta, col + colDelta) in
-    if (k == newR) then FoundKitten else Playing { robot = newR, kitten = k }
+    if (k == newR) then FoundKitten else Playing { robot = newR, kitten = k, stone = s }
 
 advance :: GameState -> Command -> GameState
 advance state MoveLeft = moveRobot (0, -1) state
@@ -40,11 +40,11 @@ advance _ Quit = Over
 advance state _ = state
 
 -- |Play a game
--- >>> playGame ['h', 'q'] Playing { robot = (2,2), kitten = (5,5) }
--- [Playing {robot = (2,2), kitten = (5,5)},Playing {robot = (2,1), kitten = (5,5)},Over]
+-- >>> playGame ['h', 'q'] Playing { robot = (2,2), kitten = (5,5), stone = (9,9)}
+-- [Playing {robot = (2,2), kitten = (5,5), stone = (9,9)},Playing {robot = (2,1), kitten = (5,5), stone = (9,9)},Over]
 --
--- >>> playGame ['h', 'h', 'h', 'h'] Playing {robot = (2,2), kitten = (2,1)}
--- [Playing {robot = (2,2), kitten = (2,1)},FoundKitten]
+-- >>> playGame ['h', 'h', 'h', 'h'] Playing {robot = (2,2), kitten = (2,1), stone = (9,9)}
+-- [Playing {robot = (2,2), kitten = (2,1), stone = (9,9)},FoundKitten]
 playGame :: [Char] -> GameState -> [GameState]
 playGame userInput initState = takeThrough (flip elem [Over, FoundKitten]) $
     scanl advance initState $
@@ -67,14 +67,14 @@ transitions list = zip ([head list] ++ list) list
 
 -- Here be IO Monad dragons
 
-initScreen (Playing robot kitten) = do
+initScreen (Playing robot kitten stone) = do
     hSetBuffering stdin NoBuffering
     hSetBuffering stdout NoBuffering
     hSetEcho stdin False
     clearScreen
     drawR robot
     drawK kitten
-    drawS (15, 20) 
+    drawS stone 
 
 draw char (row, col) = do
     setCursorPosition row col
@@ -94,7 +94,7 @@ updateScreen (oldState, newState) = do
 
 main :: IO ()
 main = do
-    let gameState = Playing (12, 40) (13, 17)
+    let gameState = Playing (12, 40) (13, 17) (15, 20) 
     initScreen gameState
     userInput <- getContents
     forM_ (transitions (playGame userInput gameState)) updateScreen

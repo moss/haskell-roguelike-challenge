@@ -1,13 +1,13 @@
 # DONE
 
+* Show another object on the screen.
 
 # WIP
 
-* Show another object on the screen.
+* The other object is also a kitten!
 
 # TODO
 
-* The other object is also a kitten!
 * It's a kitten, but it doesn't quit the game.
 * It isn't a kitten, but you still can't walk through it.
 * The kitten has a random represantation. &lt;--- release goal
