@@ -5,7 +5,7 @@ import System.IO
 
 type Position = (Int, Int)
 data GameState = Playing { robot :: Position, kitten :: Position }
-               | Over deriving (Eq)
+               | Over deriving (Eq, Show)
 data Command = MoveLeft
              | MoveDown
              | MoveUp
@@ -38,6 +38,12 @@ advance state MoveRight = moveRobot (0, 1) state
 advance _ Quit = Over
 advance state _ = state
 
+-- |Play a game
+-- >>> playGame ['h', 'q'] Playing { robot = (2,2), kitten = (5,5) }
+-- [Playing {robot = (2,2), kitten = (5,5)},Playing {robot = (2,1), kitten = (5,5)}]
+--
+-- >>> playGame ['h'] Playing {robot = (2,2), kitten = (2,1)}
+-- [Playing {robot = (2,2), kitten = (2,1)}]
 playGame :: [Char] -> GameState -> [GameState]
 playGame userInput initState = takeWhile (/= Over) $
     scanl advance initState $

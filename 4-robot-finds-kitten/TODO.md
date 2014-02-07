@@ -4,10 +4,10 @@
 
 # WIP
 
+* When you find the kitten it shows a happy message.
 
 # TODO
 
-* When you find the kitten it shows a happy message.
 * Show another more different object.
 * Can't walk through object.
 * Says something when you interact with object (by walking at it).
