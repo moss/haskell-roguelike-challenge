@@ -1,10 +1,10 @@
 # DONE
 
 * Find a kitten and game ends.
+* When you find the kitten it shows a happy message.
 
 # WIP
 
-* When you find the kitten it shows a happy message.
 
 # TODO
 
