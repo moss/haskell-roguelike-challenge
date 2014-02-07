@@ -67,7 +67,7 @@ transitions list = zip ([head list] ++ list) list
 
 -- Here be IO Monad dragons
 
-initScreen robot kitten = do
+initScreen (Playing robot kitten) = do
     hSetBuffering stdin NoBuffering
     hSetBuffering stdout NoBuffering
     hSetEcho stdin False
@@ -92,9 +92,7 @@ updateScreen (oldState, newState) = do
 
 main :: IO ()
 main = do
-    let robot = (12, 40)
-    let kitten = (13, 17)
-    let gameState = Playing robot kitten
-    initScreen robot kitten
+    let gameState = Playing (12, 40) (13, 17)
+    initScreen gameState
     userInput <- getContents
     forM_ (transitions (playGame userInput gameState)) updateScreen
