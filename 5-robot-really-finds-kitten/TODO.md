@@ -10,11 +10,11 @@
 * The other object is also a kitten!
 * It's a kitten, but it doesn't quit the game.
 * It isn't a kitten, but you still can't walk through it.
+* The kitten has a random represantation. &lt;--- release goal
+* The kitten has a random location.
 * Show yet another object on the screen.
 * New object acts exactly like the first non-kitten item.
 * New object has a different description.
-* The kitten has a random represantation.
-* The kitten has a random location.
 * One NKI has a random description.
 * Both NKIs have random descriptions
 * One NKI has a random representation.
@@ -30,8 +30,7 @@
 
 # Notes
 
-This round I'm bringing that Robot Finds Kitten clone up to parity with
-actual Robot Finds Kitten.
+This round I'm aiming at the minimal *legitimate* Robot Finds Kitten: There is one non-kitten item, and you don't know what the kitten will look like. Anything else is gravy.
 
 # Plan for this iteration, after last retro
 
