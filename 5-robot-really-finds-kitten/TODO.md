@@ -2,10 +2,10 @@
 
 * Show another object on the screen.
 * The other object is also a kitten!
+* It's a kitten, but it doesn't quit the game.
 
 # WIP
 
-* It's a kitten, but it doesn't quit the game.
 
 # TODO
 
