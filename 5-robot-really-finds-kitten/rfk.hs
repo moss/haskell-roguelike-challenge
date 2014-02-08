@@ -1,5 +1,6 @@
 module RobotFindsKitten where
 import Control.Monad
+import Data.List
 import System.Console.ANSI
 import System.IO
 
@@ -7,7 +8,17 @@ type Position = (Int, Int)
 
 data GameState = Playing { robot :: Position, items :: [Item] }
                | FoundKitten
-               | Over deriving (Eq, Show)
+               | Over deriving (Eq)
+
+instance Show GameState where
+    show (Playing robot items) = "Playing{"
+                               ++ "#@"
+                               ++ (show robot)
+                               ++ ";"
+                               ++ (intercalate ", " (map show items))
+                               ++ "}"
+    show FoundKitten = "FoundKitten"
+    show Over = "Over"
 
 data Command = MoveLeft
              | MoveDown
@@ -21,6 +32,7 @@ data Item = Kitten { representation :: Char, position :: Position } deriving (Eq
 instance Show Item where
     show (Kitten representation position) = "Kitten "
                                           ++ [representation]
+                                          ++ "@"
                                           ++ (show position)
 
 parseInput :: [Char] -> [Command]
@@ -51,14 +63,14 @@ advance _ Quit = Over
 advance state _ = state
 
 -- |Play a game
--- >>> playGame ['h', 'q'] Playing { robot = (2,2), items = [Kitten 'k' (5,5)]}
--- [Playing {robot = (2,2), items = [Kitten k(5,5)]},Playing {robot = (2,1), items = [Kitten k(5,5)]},Over]
+-- >>> playGame ['h', 'q'] (Playing (2,2) [Kitten 'k' (5,5)])
+-- [Playing{#@(2,2);Kitten k@(5,5)},Playing{#@(2,1);Kitten k@(5,5)},Over]
 --
--- >>> playGame ['h', 'h', 'h', 'h'] Playing {robot = (2,2), items = [Kitten 'k' (2,1)]}
--- [Playing {robot = (2,2), items = [Kitten k(2,1)]},FoundKitten]
+-- >>> playGame ['h', 'h', 'h', 'h'] (Playing (2,2) [Kitten 'k' (2,1)])
+-- [Playing{#@(2,2);Kitten k@(2,1)},FoundKitten]
 --
--- >>> playGame ['h', 'h', 'h', 'h'] Playing {robot = (2,2), items = [Kitten 's' (2,1)]}
--- [Playing {robot = (2,2), items = [Kitten s(2,1)]},FoundKitten]
+-- >>> playGame ['h', 'h', 'h', 'h'] (Playing (2,2) [Kitten 's' (2,1)])
+-- [Playing{#@(2,2);Kitten s@(2,1)},FoundKitten]
 playGame :: [Char] -> GameState -> [GameState]
 playGame userInput initState = takeThrough (flip elem [Over, FoundKitten]) $
     scanl advance initState $
