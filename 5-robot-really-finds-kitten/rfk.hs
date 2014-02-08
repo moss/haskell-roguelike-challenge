@@ -63,7 +63,7 @@ moveRobot (rowDelta, colDelta) Playing { robot = (row, col), items = is } =
     let itemInTheWay = itemAt newR in
     case itemAt newR is of
       Just (Kitten _ _) -> [FoundKitten]
-      Just (NKI _ _) -> [FoundNKI]
+      Just (NKI _ _) -> [FoundNKI, Playing (row, col) is]
       Nothing -> [Playing { robot = newR, items = is }]
 
 positions :: [Item] -> [Position]
@@ -78,7 +78,10 @@ advance _ Quit = [Over]
 advance state _ = [state]
 
 -- |like scanl, but one trip through the function can produce multiple
--- 
+-- >>> chunkyscanl (\ latest new -> [latest + new]) 0 [1,2,3]
+-- [0,1,3,6]
+-- >>> chunkyscanl (\ latest new -> [9, latest + new]) 0 [1,2,3]
+-- [0,9,1,9,3,9,6]
 chunkyscanl :: (a -> b -> [a]) -> a -> [b] -> [a]
 chunkyscanl f q ls =  q : (case ls of
                      []   -> []
@@ -90,13 +93,13 @@ chunkyscanl f q ls =  q : (case ls of
 -- >>> playGame ['h', 'q'] (Playing (2,2) [Kitten 'k' (5,5)])
 -- [Playing{#@(2,2);Kitten k@(5,5)},Playing{#@(2,1);Kitten k@(5,5)},Over]
 --
--- >>> playGame ['h', 'h', 'h', 'h'] (Playing (2,2) [Kitten 'k' (2,1)])
+-- >>> playGame ['h', 'l'] (Playing (2,2) [Kitten 'k' (2,1)])
 -- [Playing{#@(2,2);Kitten k@(2,1)},FoundKitten]
 --
--- >>> playGame ['h', 'h', 'h', 'h'] (Playing (2,2) [NKI 's' (2,1)])
--- [Playing{#@(2,2);NKI s@(2,1)},FoundNKI]
+-- >>> playGame ['h', 'l'] (Playing (2,2) [NKI 's' (2,1)])
+-- [Playing{#@(2,2);NKI s@(2,1)},FoundNKI,Playing{#@(2,2);NKI s@(2,1)},Playing{#@(2,3);NKI s@(2,1)}]
 playGame :: [Char] -> GameState -> [GameState]
-playGame userInput initState = takeThrough (flip elem [Over, FoundKitten, FoundNKI]) $
+playGame userInput initState = takeThrough (flip elem [Over, FoundKitten]) $
     chunkyscanl advance initState $
     parseInput userInput
 
@@ -126,6 +129,7 @@ initScreen (Playing robot items) = do
     mapM_ drawItem items
 
 drawItem (Kitten representation position) = draw representation position
+drawItem (NKI representation position) = draw representation position
 
 draw char (row, col) = do
     setCursorPosition row col
@@ -139,6 +143,8 @@ clear = draw ' '
 
 updateScreen (_, Over) = do putStrLn "Goodbye!"
 updateScreen (_, FoundKitten) = do putStrLn "Aww! You found a kitten!"
+updateScreen (_, FoundNKI) = do putStr "Just a useless gray rock."
+updateScreen (FoundNKI, _) = do return ()
 updateScreen (oldState, newState) = do
   clear (robot oldState)
   drawR (robot newState)
@@ -146,7 +152,7 @@ updateScreen (oldState, newState) = do
 main :: IO ()
 main = do
     let gameState = Playing (12, 40) [ Kitten 'k' (13, 17)
-                                     , Kitten 's' (15, 20)
+                                     , NKI 's' (15, 20)
                                      ]
     initScreen gameState
     userInput <- getContents
