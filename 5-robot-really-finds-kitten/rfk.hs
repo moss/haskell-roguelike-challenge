@@ -45,7 +45,7 @@ advance state _ = state
 --
 -- >>> playGame ['h', 'h', 'h', 'h'] Playing {robot = (2,2), kitten = (2,1), stone = (9,9)}
 -- [Playing {robot = (2,2), kitten = (2,1), stone = (9,9)},FoundKitten]
--- 
+--
 -- >>> playGame ['h', 'h', 'h', 'h'] Playing {robot = (2,2), kitten = (9,9), stone = (2,1)}
 -- [Playing {robot = (2,2), kitten = (9,9), stone = (2,1)},FoundKitten]
 --
@@ -78,7 +78,7 @@ initScreen (Playing robot kitten stone) = do
     clearScreen
     drawR robot
     drawK kitten
-    drawS stone 
+    drawS stone
 
 draw char (row, col) = do
     setCursorPosition row col
@@ -98,7 +98,7 @@ updateScreen (oldState, newState) = do
 
 main :: IO ()
 main = do
-    let gameState = Playing (12, 40) (13, 17) (15, 20) 
+    let gameState = Playing (12, 40) (13, 17) (15, 20)
     initScreen gameState
     userInput <- getContents
     forM_ (transitions (playGame userInput gameState)) updateScreen
