@@ -3,10 +3,10 @@
 
 # WIP
 
+* The kitten has a random location.
 
 # TODO
 
-* The kitten has a random location.
 * Show yet another object on the screen.
 * New object acts exactly like the first non-kitten item.
 * One NKI has a random location. &lt;--- Minimal viable product

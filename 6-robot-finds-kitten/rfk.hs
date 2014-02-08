@@ -89,16 +89,24 @@ chunkyscanl f q ls =  q : (case ls of
                      x:xs -> let nextchunk = f q x in
                              (init nextchunk) ++ chunkyscanl f (last nextchunk) xs)
 
+-- |Show a simple representation of a series of gameplay states
+diagram :: [GameState] -> String
+diagram = intercalate " -> " . map (\ state -> case state of
+                                                Playing robot _ -> show robot
+                                                FoundKitten -> "Kitten"
+                                                FoundNKI -> "NKI"
+                                                Over -> "Over"
+                                                )
 
 -- |Play a game
--- >>> playGame ['h', 'q'] (Playing (2,2) [Kitten 'k' (5,5)])
--- [Playing{#@(2,2);Kitten k@(5,5)},Playing{#@(2,1);Kitten k@(5,5)},Over]
+-- >>> diagram $ playGame ['h', 'q'] (Playing (2,2) [Kitten 'k' (5,5)])
+-- "(2,2) -> (2,1) -> Over"
 --
--- >>> playGame ['h', 'l'] (Playing (2,2) [Kitten 'k' (2,1)])
--- [Playing{#@(2,2);Kitten k@(2,1)},FoundKitten]
+-- >>> diagram $ playGame ['h', 'l'] (Playing (2,2) [Kitten 'k' (2,1)])
+-- "(2,2) -> Kitten"
 --
--- >>> playGame ['h', 'l'] (Playing (2,2) [NKI 's' (2,1)])
--- [Playing{#@(2,2);NKI s@(2,1)},FoundNKI,Playing{#@(2,2);NKI s@(2,1)},Playing{#@(2,3);NKI s@(2,1)}]
+-- >>> diagram $ playGame ['h', 'l'] (Playing (2,2) [NKI 's' (2,1)])
+-- "(2,2) -> NKI -> (2,2) -> (2,3)"
 playGame :: [Char] -> GameState -> [GameState]
 playGame userInput initState = takeThrough (flip elem [Over, FoundKitten]) $
     chunkyscanl advance initState $
