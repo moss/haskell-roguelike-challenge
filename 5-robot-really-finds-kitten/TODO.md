@@ -4,13 +4,13 @@
 * The other object is also a kitten!
 * It's a kitten, but it doesn't quit the game.
 * It isn't a kitten, but you still can't walk through it.
+* The kitten has a random represantation. &lt;--- release goal
 
 # WIP
 
 
 # TODO
 
-* The kitten has a random represantation. &lt;--- release goal
 * The kitten has a random location.
 * Show yet another object on the screen.
 * New object acts exactly like the first non-kitten item.

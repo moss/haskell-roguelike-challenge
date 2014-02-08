@@ -3,6 +3,7 @@ import Control.Monad
 import Data.List
 import System.Console.ANSI
 import System.IO
+import System.Random
 
 type Position = (Int, Int)
 
@@ -151,8 +152,11 @@ updateScreen (oldState, newState) = do
 
 main :: IO ()
 main = do
-    let gameState = Playing (12, 40) [ Kitten 'k' (13, 17)
-                                     , NKI 's' (15, 20)
+    g <- newStdGen
+    let (kittenChar, g') = randomR ('A', 'z') g
+    let (stoneChar, g'') = randomR ('A', 'z') g'
+    let gameState = Playing (12, 40) [ Kitten kittenChar (13, 17)
+                                     , NKI stoneChar (15, 20)
                                      ]
     initScreen gameState
     userInput <- getContents
