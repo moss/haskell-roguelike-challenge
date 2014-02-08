@@ -8,6 +8,7 @@ type Position = (Int, Int)
 
 data GameState = Playing { robot :: Position, items :: [Item] }
                | FoundKitten
+               | FoundNKI
                | Over deriving (Eq)
 
 instance Show GameState where
@@ -18,6 +19,7 @@ instance Show GameState where
                                ++ (intercalate ", " (map show items))
                                ++ "}"
     show FoundKitten = "FoundKitten"
+    show FoundNKI = "FoundNKI"
     show Over = "Over"
 
 data Command = MoveLeft
@@ -27,10 +29,16 @@ data Command = MoveLeft
              | Quit
              | Unknown
              deriving (Eq)
-data Item = Kitten { representation :: Char, position :: Position } deriving (Eq)
+data Item = Kitten { representation :: Char, position :: Position }
+          | NKI { representation :: Char, position :: Position }
+          deriving (Eq)
 
 instance Show Item where
     show (Kitten representation position) = "Kitten "
+                                          ++ [representation]
+                                          ++ "@"
+                                          ++ (show position)
+    show (NKI representation position) = "NKI "
                                           ++ [representation]
                                           ++ "@"
                                           ++ (show position)
@@ -46,21 +54,37 @@ parseCommand 'k' = MoveUp
 parseCommand 'l' = MoveRight
 parseCommand _ = Unknown
 
-moveRobot :: (Int, Int) -> GameState -> GameState
+itemAt :: Position -> [Item] -> Maybe Item
+itemAt pos = find (\ item -> (position item) == pos)
+
+moveRobot :: (Int, Int) -> GameState -> [GameState]
 moveRobot (rowDelta, colDelta) Playing { robot = (row, col), items = is } =
     let newR = (row + rowDelta, col + colDelta) in
-    if (elem newR (positions is)) then FoundKitten else Playing { robot = newR, items = is }
+    let itemInTheWay = itemAt newR in
+    case itemAt newR is of
+      Just (Kitten _ _) -> [FoundKitten]
+      Just (NKI _ _) -> [FoundNKI]
+      Nothing -> [Playing { robot = newR, items = is }]
 
 positions :: [Item] -> [Position]
 positions = map position
 
-advance :: GameState -> Command -> GameState
+advance :: GameState -> Command -> [GameState]
 advance state MoveLeft = moveRobot (0, -1) state
 advance state MoveUp = moveRobot (-1, 0) state
 advance state MoveDown = moveRobot (1, 0) state
 advance state MoveRight = moveRobot (0, 1) state
-advance _ Quit = Over
-advance state _ = state
+advance _ Quit = [Over]
+advance state _ = [state]
+
+-- |like scanl, but one trip through the function can produce multiple
+-- 
+chunkyscanl :: (a -> b -> [a]) -> a -> [b] -> [a]
+chunkyscanl f q ls =  q : (case ls of
+                     []   -> []
+                     x:xs -> let nextchunk = f q x in
+                             (init nextchunk) ++ chunkyscanl f (last nextchunk) xs)
+
 
 -- |Play a game
 -- >>> playGame ['h', 'q'] (Playing (2,2) [Kitten 'k' (5,5)])
@@ -69,11 +93,11 @@ advance state _ = state
 -- >>> playGame ['h', 'h', 'h', 'h'] (Playing (2,2) [Kitten 'k' (2,1)])
 -- [Playing{#@(2,2);Kitten k@(2,1)},FoundKitten]
 --
--- >>> playGame ['h', 'h', 'h', 'h'] (Playing (2,2) [Kitten 's' (2,1)])
--- [Playing{#@(2,2);Kitten s@(2,1)},FoundKitten]
+-- >>> playGame ['h', 'h', 'h', 'h'] (Playing (2,2) [NKI 's' (2,1)])
+-- [Playing{#@(2,2);NKI s@(2,1)},FoundNKI]
 playGame :: [Char] -> GameState -> [GameState]
-playGame userInput initState = takeThrough (flip elem [Over, FoundKitten]) $
-    scanl advance initState $
+playGame userInput initState = takeThrough (flip elem [Over, FoundKitten, FoundNKI]) $
+    chunkyscanl advance initState $
     parseInput userInput
 
 -- |takeThrough, applied to a predicate @p@ and a list @xs@, returns the
