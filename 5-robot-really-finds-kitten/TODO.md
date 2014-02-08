@@ -5,10 +5,10 @@
 
 # WIP
 
+* It's a kitten, but it doesn't quit the game.
 
 # TODO
 
-* It's a kitten, but it doesn't quit the game.
 * It isn't a kitten, but you still can't walk through it.
 * The kitten has a random represantation. &lt;--- release goal
 * The kitten has a random location.
