@@ -2,13 +2,13 @@
 
 * The kitten has a random location.
 * Show yet another object on the screen.
+* New object acts exactly like the first non-kitten item.
 
 # WIP
 
 
 # TODO
 
-* New object acts exactly like the first non-kitten item.
 * One NKI has a random location. &lt;--- Minimal viable product
 * New object has a different description.
 * Both NKIs have random locations.
