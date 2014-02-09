@@ -1,10 +1,12 @@
 #!/bin/bash
 
+yn='y'
 while true; do
-    read -p "Run again?" -n1 yn
     case $yn in
         [Yy]* ) runhaskell rfk.hs;;
-        [Nn]* ) exit;;
+        [Nnq]* ) exit;;
         * ) echo "Please answer yes or no.";;
     esac
+    read -p "Run again?" -n1 yn
+    clear
 done
