@@ -159,12 +159,18 @@ takeRandom count range = do
     g <- newStdGen
     return $ take count $ randomRs range g
 
-main :: IO ()
-main = do
-    [kittenChar, stoneChar] <- takeRandom 2 ('A', 'z')
+generateLevel = do
+    [kittenChar, stoneChar, otherStoneChar] <- takeRandom 3 ('A', 'z')
     [kittenRow] <- takeRandom 1 (0, 25)
     [kittenCol] <- takeRandom 1 (0, 80)
-    let level = [Kitten kittenChar (kittenRow, kittenCol), NKI stoneChar (15, 20)]
+    return [ Kitten kittenChar (kittenRow, kittenCol)
+           , NKI stoneChar (15, 20)
+           , NKI otherStoneChar (6, 42)
+           ]
+
+main :: IO ()
+main = do
+    level <- generateLevel
     let gameState = Playing (12, 40)
     initScreen level gameState
     userInput <- getContents
