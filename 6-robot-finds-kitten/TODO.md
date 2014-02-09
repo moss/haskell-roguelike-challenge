@@ -7,10 +7,10 @@
 
 # WIP
 
+* New object has a different description.
 
 # TODO
 
-* New object has a different description.
 * Both NKIs have random locations.
 * One NKI has a random description.
 * There are three NKIs.
