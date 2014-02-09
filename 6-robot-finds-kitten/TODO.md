@@ -31,3 +31,24 @@ This round moves us to having gameplay that's actually like Leonard's original v
 * Decouple your types.
 * Omit the inessential from tests.
 * Let the tests be your safety net.
+
+# A Design Sketch
+
+## Current design
+
+* User Input -> Commands -> States
+* parseInput translates stream of input to stream of commands
+* playGame and advance translate commands to new states
+* Lots of work maintaining state from one round to the next
+* Some commands need to run through multiple states
+* Some states don't have the same information as others, which causes pain
+* Have to do a lot of manual updating of states
+
+## New design
+
+* User Input -> Commands &lt;- Game Behaviors
+* Each game behavior watches the command stream
+* Different game behaviors translate to the screen differently
+* No more Big Monolithic Game State
+* Map doesn't even need to be a behavior, since it's static
+* Map *does* need to allow easy querying by position
