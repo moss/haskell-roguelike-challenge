@@ -155,11 +155,13 @@ updateScreen (oldState, newState) = do
   clear (robot oldState)
   drawR (robot newState)
 
+takeRandom count range = do
+    g <- newStdGen
+    return $ take count $ randomRs range g
+
 main :: IO ()
 main = do
-    g <- newStdGen
-    let (kittenChar, g') = randomR ('A', 'z') g
-    let (stoneChar, g'') = randomR ('A', 'z') g'
+    [kittenChar, stoneChar] <- takeRandom 2 ('A', 'z')
     let level = [Kitten kittenChar (13, 17), NKI stoneChar (15, 20)]
     let gameState = Playing (12, 40)
     initScreen level gameState
