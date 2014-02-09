@@ -19,21 +19,12 @@ data Command = MoveLeft
              | Quit
              | Unknown
              deriving (Eq)
+
 data Item = Kitten { representation :: Char, position :: Position }
           | NKI { representation :: Char, position :: Position }
           deriving (Eq)
 
 type Level = [Item]
-
-instance Show Item where
-    show (Kitten representation position) = "Kitten "
-                                          ++ [representation]
-                                          ++ "@"
-                                          ++ (show position)
-    show (NKI representation position) = "NKI "
-                                          ++ [representation]
-                                          ++ "@"
-                                          ++ (show position)
 
 parseInput :: [Char] -> [Command]
 parseInput chars = map parseCommand chars
