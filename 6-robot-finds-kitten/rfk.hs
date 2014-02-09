@@ -7,16 +7,10 @@ import System.Random
 
 type Position = (Int, Int)
 
-data GameState = Playing { robot :: Position }
+data GameState = Playing Position
                | FoundKitten
                | FoundNKI
                | Over deriving (Eq)
-
-instance Show GameState where
-    show (Playing robot) = "Playing " ++ (show robot)
-    show FoundKitten = "FoundKitten"
-    show FoundNKI = "FoundNKI"
-    show Over = "Over"
 
 data Command = MoveLeft
              | MoveDown
@@ -56,13 +50,13 @@ itemAt :: Position -> [Item] -> Maybe Item
 itemAt pos = find (\ item -> (position item) == pos)
 
 moveRobot :: Level -> (Int, Int) -> GameState -> [GameState]
-moveRobot level (rowDelta, colDelta) Playing { robot = (row, col) } =
+moveRobot level (rowDelta, colDelta) (Playing (row, col)) =
     let newR = (row + rowDelta, col + colDelta) in
     let itemInTheWay = itemAt newR in
     case itemAt newR level of
       Just (Kitten _ _) -> [FoundKitten]
       Just (NKI _ _) -> [FoundNKI, Playing (row, col)]
-      Nothing -> [Playing { robot = newR }]
+      Nothing -> [Playing newR]
 
 positions :: [Item] -> [Position]
 positions = map position
@@ -151,9 +145,9 @@ updateScreen (_, Over) = do putStrLn "Goodbye!"
 updateScreen (_, FoundKitten) = do putStrLn "Aww! You found a kitten!"
 updateScreen (_, FoundNKI) = do putStr "Just a useless gray rock."
 updateScreen (FoundNKI, _) = do return ()
-updateScreen (oldState, newState) = do
-  clear (robot oldState)
-  drawR (robot newState)
+updateScreen (Playing oldState, Playing newState) = do
+  clear oldState
+  drawR newState
 
 takeRandom count range = do
     g <- newStdGen
