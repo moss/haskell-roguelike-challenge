@@ -175,4 +175,4 @@ main = do
     let gameState = Playing (12, 40)
     initScreen level gameState
     userInput <- getContents
-    forM_ (transitions (playGame level userInput gameState)) updateScreen
+    forM_ (transitions $ playGame level userInput gameState) updateScreen
