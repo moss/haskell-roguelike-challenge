@@ -161,10 +161,11 @@ takeRandom count range = do
 
 generateLevel = do
     [kittenChar, stoneChar, otherStoneChar] <- takeRandom 3 ('A', 'z')
-    [kittenRow] <- takeRandom 1 (0, 25)
-    [kittenCol] <- takeRandom 1 (0, 80)
-    return [ Kitten kittenChar (kittenRow, kittenCol)
-           , NKI stoneChar (15, 20)
+    randomRows <- takeRandom 2 (0, 25)
+    randomCols <- takeRandom 2 (0, 80)
+    let [kittenPos, stonePos] = zip randomRows randomCols
+    return [ Kitten kittenChar kittenPos
+           , NKI stoneChar stonePos
            , NKI otherStoneChar (6, 42)
            ]
 
