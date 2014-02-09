@@ -7,18 +7,13 @@ import System.Random
 
 type Position = (Int, Int)
 
-data GameState = Playing { robot :: Position, items :: [Item] }
+data GameState = Playing { robot :: Position }
                | FoundKitten
                | FoundNKI
                | Over deriving (Eq)
 
 instance Show GameState where
-    show (Playing robot items) = "Playing{"
-                               ++ "#@"
-                               ++ (show robot)
-                               ++ ";"
-                               ++ (intercalate ", " (map show items))
-                               ++ "}"
+    show (Playing robot) = "Playing " ++ (show robot)
     show FoundKitten = "FoundKitten"
     show FoundNKI = "FoundNKI"
     show Over = "Over"
@@ -61,13 +56,13 @@ itemAt :: Position -> [Item] -> Maybe Item
 itemAt pos = find (\ item -> (position item) == pos)
 
 moveRobot :: Level -> (Int, Int) -> GameState -> [GameState]
-moveRobot level (rowDelta, colDelta) Playing { robot = (row, col), items = level' } =
+moveRobot level (rowDelta, colDelta) Playing { robot = (row, col) } =
     let newR = (row + rowDelta, col + colDelta) in
     let itemInTheWay = itemAt newR in
     case itemAt newR level of
       Just (Kitten _ _) -> [FoundKitten]
-      Just (NKI _ _) -> [FoundNKI, Playing (row, col) level]
-      Nothing -> [Playing { robot = newR, items = level }]
+      Just (NKI _ _) -> [FoundNKI, Playing (row, col)]
+      Nothing -> [Playing { robot = newR }]
 
 positions :: [Item] -> [Position]
 positions = map position
@@ -94,20 +89,20 @@ chunkyscanl f q ls =  q : (case ls of
 -- |Show a simple representation of a series of gameplay states
 diagram :: [GameState] -> String
 diagram = intercalate " -> " . map (\ state -> case state of
-                                                Playing robot _ -> show robot
+                                                Playing robot -> show robot
                                                 FoundKitten -> "Kitten"
                                                 FoundNKI -> "NKI"
                                                 Over -> "Over"
                                                 )
 
 -- |Play a game
--- >>> diagram $ playGame [Kitten 'k' (5,5)] ['h', 'q'] (Playing (2,2) [Kitten 'k' (5,5)])
+-- >>> diagram $ playGame [Kitten 'k' (5,5)] ['h', 'q'] (Playing (2,2))
 -- "(2,2) -> (2,1) -> Over"
 --
--- >>> diagram $ playGame [Kitten 'k' (2,1)] ['h', 'l'] (Playing (2,2) [Kitten 'k' (2,1)])
+-- >>> diagram $ playGame [Kitten 'k' (2,1)] ['h', 'l'] (Playing (2,2))
 -- "(2,2) -> Kitten"
 --
--- >>> diagram $ playGame [NKI 's' (2,1)] ['h', 'l'] (Playing (2,2) [NKI 's' (2,1)])
+-- >>> diagram $ playGame [NKI 's' (2,1)] ['h', 'l'] (Playing (2,2))
 -- "(2,2) -> NKI -> (2,2) -> (2,3)"
 playGame :: Level -> [Char] -> GameState -> [GameState]
 playGame level userInput initState = takeThrough (flip elem [Over, FoundKitten]) $
@@ -131,13 +126,13 @@ transitions list = zip ([head list] ++ list) list
 
 -- Here be IO Monad dragons
 
-initScreen (Playing robot items) = do
+initScreen level (Playing robot) = do
     hSetBuffering stdin NoBuffering
     hSetBuffering stdout NoBuffering
     hSetEcho stdin False
     clearScreen
     drawR robot
-    mapM_ drawItem items
+    mapM_ drawItem level
 
 drawItem (Kitten representation position) = draw representation position
 drawItem (NKI representation position) = draw representation position
@@ -166,7 +161,7 @@ main = do
     let (kittenChar, g') = randomR ('A', 'z') g
     let (stoneChar, g'') = randomR ('A', 'z') g'
     let level = [Kitten kittenChar (13, 17), NKI stoneChar (15, 20)]
-    let gameState = Playing (12, 40) level
-    initScreen gameState
+    let gameState = Playing (12, 40)
+    initScreen level gameState
     userInput <- getContents
     forM_ (transitions (playGame level userInput gameState)) updateScreen
