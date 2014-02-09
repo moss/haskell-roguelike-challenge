@@ -34,6 +34,8 @@ data Item = Kitten { representation :: Char, position :: Position }
           | NKI { representation :: Char, position :: Position }
           deriving (Eq)
 
+type Level = [Item]
+
 instance Show Item where
     show (Kitten representation position) = "Kitten "
                                           ++ [representation]
@@ -58,8 +60,8 @@ parseCommand _ = Unknown
 itemAt :: Position -> [Item] -> Maybe Item
 itemAt pos = find (\ item -> (position item) == pos)
 
-moveRobot :: (Int, Int) -> GameState -> [GameState]
-moveRobot (rowDelta, colDelta) Playing { robot = (row, col), items = level } =
+moveRobot :: Level -> (Int, Int) -> GameState -> [GameState]
+moveRobot level (rowDelta, colDelta) Playing { robot = (row, col), items = level' } =
     let newR = (row + rowDelta, col + colDelta) in
     let itemInTheWay = itemAt newR in
     case itemAt newR level of
@@ -70,13 +72,13 @@ moveRobot (rowDelta, colDelta) Playing { robot = (row, col), items = level } =
 positions :: [Item] -> [Position]
 positions = map position
 
-advance :: GameState -> Command -> [GameState]
-advance state MoveLeft = moveRobot (0, -1) state
-advance state MoveUp = moveRobot (-1, 0) state
-advance state MoveDown = moveRobot (1, 0) state
-advance state MoveRight = moveRobot (0, 1) state
-advance _ Quit = [Over]
-advance state _ = [state]
+advance :: Level -> GameState -> Command -> [GameState]
+advance level state MoveLeft = moveRobot level (0, -1) state
+advance level state MoveUp = moveRobot level (-1, 0) state
+advance level state MoveDown = moveRobot level (1, 0) state
+advance level state MoveRight = moveRobot level (0, 1) state
+advance _ _ Quit = [Over]
+advance _ state _ = [state]
 
 -- |like scanl, but one trip through the function can produce multiple
 -- >>> chunkyscanl (\ latest new -> [latest + new]) 0 [1,2,3]
@@ -99,17 +101,17 @@ diagram = intercalate " -> " . map (\ state -> case state of
                                                 )
 
 -- |Play a game
--- >>> diagram $ playGame ['h', 'q'] (Playing (2,2) [Kitten 'k' (5,5)])
+-- >>> diagram $ playGame [Kitten 'k' (5,5)] ['h', 'q'] (Playing (2,2) [Kitten 'k' (5,5)])
 -- "(2,2) -> (2,1) -> Over"
 --
--- >>> diagram $ playGame ['h', 'l'] (Playing (2,2) [Kitten 'k' (2,1)])
+-- >>> diagram $ playGame [Kitten 'k' (2,1)] ['h', 'l'] (Playing (2,2) [Kitten 'k' (2,1)])
 -- "(2,2) -> Kitten"
 --
--- >>> diagram $ playGame ['h', 'l'] (Playing (2,2) [NKI 's' (2,1)])
+-- >>> diagram $ playGame [NKI 's' (2,1)] ['h', 'l'] (Playing (2,2) [NKI 's' (2,1)])
 -- "(2,2) -> NKI -> (2,2) -> (2,3)"
-playGame :: [Char] -> GameState -> [GameState]
-playGame userInput initState = takeThrough (flip elem [Over, FoundKitten]) $
-    chunkyscanl advance initState $
+playGame :: Level -> [Char] -> GameState -> [GameState]
+playGame level userInput initState = takeThrough (flip elem [Over, FoundKitten]) $
+    chunkyscanl (advance level) initState $
     parseInput userInput
 
 -- |takeThrough, applied to a predicate @p@ and a list @xs@, returns the
@@ -167,4 +169,4 @@ main = do
     let gameState = Playing (12, 40) level
     initScreen gameState
     userInput <- getContents
-    forM_ (transitions (playGame userInput gameState)) updateScreen
+    forM_ (transitions (playGame level userInput gameState)) updateScreen
