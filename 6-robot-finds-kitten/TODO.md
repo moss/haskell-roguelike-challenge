@@ -1,9 +1,9 @@
 # DONE
 
+* The kitten has a random location.
 
 # WIP
 
-* The kitten has a random location.
 
 # TODO
 

@@ -162,7 +162,9 @@ takeRandom count range = do
 main :: IO ()
 main = do
     [kittenChar, stoneChar] <- takeRandom 2 ('A', 'z')
-    let level = [Kitten kittenChar (13, 17), NKI stoneChar (15, 20)]
+    [kittenRow] <- takeRandom 1 (0, 25)
+    [kittenCol] <- takeRandom 1 (0, 80)
+    let level = [Kitten kittenChar (kittenRow, kittenCol), NKI stoneChar (15, 20)]
     let gameState = Playing (12, 40)
     initScreen level gameState
     userInput <- getContents
