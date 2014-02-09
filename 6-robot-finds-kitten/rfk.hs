@@ -59,13 +59,13 @@ itemAt :: Position -> [Item] -> Maybe Item
 itemAt pos = find (\ item -> (position item) == pos)
 
 moveRobot :: (Int, Int) -> GameState -> [GameState]
-moveRobot (rowDelta, colDelta) Playing { robot = (row, col), items = is } =
+moveRobot (rowDelta, colDelta) Playing { robot = (row, col), items = level } =
     let newR = (row + rowDelta, col + colDelta) in
     let itemInTheWay = itemAt newR in
-    case itemAt newR is of
+    case itemAt newR level of
       Just (Kitten _ _) -> [FoundKitten]
-      Just (NKI _ _) -> [FoundNKI, Playing (row, col) is]
-      Nothing -> [Playing { robot = newR, items = is }]
+      Just (NKI _ _) -> [FoundNKI, Playing (row, col) level]
+      Nothing -> [Playing { robot = newR, items = level }]
 
 positions :: [Item] -> [Position]
 positions = map position
@@ -163,9 +163,8 @@ main = do
     g <- newStdGen
     let (kittenChar, g') = randomR ('A', 'z') g
     let (stoneChar, g'') = randomR ('A', 'z') g'
-    let gameState = Playing (12, 40) [ Kitten kittenChar (13, 17)
-                                     , NKI stoneChar (15, 20)
-                                     ]
+    let level = [Kitten kittenChar (13, 17), NKI stoneChar (15, 20)]
+    let gameState = Playing (12, 40) level
     initScreen gameState
     userInput <- getContents
     forM_ (transitions (playGame userInput gameState)) updateScreen
