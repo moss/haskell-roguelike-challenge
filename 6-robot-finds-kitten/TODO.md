@@ -56,3 +56,26 @@ This round moves us to having gameplay that's actually like Leonard's original v
 * No more Big Monolithic Game State
 * Map doesn't even need to be a behavior, since it's static
 * Map *does* need to allow easy querying by position
+
+# Retrospective
+
+# What went well?
+
+* I shipped something.
+
+# What went poorly?
+
+* It is impossible to hack on a plane in the middle of the night.
+* I didn't really sleep that night because plane.
+* I was too exhausted the next day to do a seventh roung.
+* The day after that I was sick.
+
+# What to do differently?
+
+* Less ambitious target.
+* Don't take redeye flights when you can avoid it it's just not worth it.
+* If you can't avoid it, at least sleep properly the night before.
+* If you can't avoid it, don't plan to get anything done the next day.
+* None of these are about programming.
+* Because programming wasn't really the problem.
+* But it is about time to do SOMETHING better around game behaviors.
