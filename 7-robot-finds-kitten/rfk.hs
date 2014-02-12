@@ -7,10 +7,9 @@ import System.Random
 
 type Position = (Int, Int)
 
-data GameState = Playing { robot :: Position }
+data GameState = Playing { robot :: Position, message :: String }
                -- TODO these things shouldn't all be one single GameState
                | FoundKitten
-               | FoundNKI
                | Over deriving (Eq)
 
 data Command = MoveLeft
@@ -42,13 +41,14 @@ itemAt :: Position -> [Item] -> Maybe Item
 itemAt pos = find (\ item -> (position item) == pos)
 
 moveRobot :: Level -> (Int, Int) -> GameState -> [GameState]
-moveRobot level (rowDelta, colDelta) Playing { robot = (row, col) } =
+moveRobot level (rowDelta, colDelta) curState =
+    let (row, col) = robot curState in
     let newR = (row + rowDelta, col + colDelta) in
     let itemInTheWay = itemAt newR in
     case itemAt newR level of
       Just (Kitten _ _) -> [FoundKitten]
-      Just (NKI _ _) -> [FoundNKI, Playing (row, col)]
-      Nothing -> [Playing newR]
+      Just (NKI _ _) -> [curState { message = "Just a useless gray rock."}]
+      Nothing -> [Playing { robot = newR, message = "" }]
 
 positions :: [Item] -> [Position]
 positions = map position
@@ -78,21 +78,23 @@ chunkyscanl f q ls =  q : (case ls of
 -- |Show a simple representation of a series of gameplay states
 diagram :: [GameState] -> String
 diagram = intercalate " -> " . map (\ state -> case state of
-                                                Playing { robot = robot } -> show robot
-                                                FoundKitten -> "Kitten"
-                                                FoundNKI -> "NKI"
-                                                Over -> "Over"
-                                                )
+                          Playing { robot = robot, message = "" } -> show robot
+                          Playing { message = message } -> message
+                          FoundKitten -> "Kitten"
+                          Over -> "Over"
+                          )
+
+playing robotPosition = Playing { robot = robotPosition, message = "" }
 
 -- |Play a game
--- >>> diagram $ playGame [Kitten 'k' (5,5)] ['h', 'q'] (Playing (2,2))
+-- >>> diagram $ playGame [Kitten 'k' (5,5)] ['h', 'q'] (playing (2,2))
 -- "(2,2) -> (2,1) -> Over"
 --
--- >>> diagram $ playGame [Kitten 'k' (2,1)] ['h', 'l'] (Playing (2,2))
+-- >>> diagram $ playGame [Kitten 'k' (2,1)] ['h', 'l'] (playing (2,2))
 -- "(2,2) -> Kitten"
 --
--- >>> diagram $ playGame [NKI 's' (2,1)] ['h', 'l'] (Playing (2,2))
--- "(2,2) -> NKI -> (2,2) -> (2,3)"
+-- >>> diagram $ playGame [NKI 's' (2,1)] ['h', 'l'] (playing (2,2))
+-- "(2,2) -> Just a useless gray rock. -> (2,3)"
 playGame :: Level -> [Char] -> GameState -> [GameState]
 playGame level userInput initState = takeThrough (flip elem [Over, FoundKitten]) $
     chunkyscanl (advance level) initState $
@@ -116,7 +118,7 @@ transitions list = zip ([head list] ++ list) list
 
 -- Here be IO Monad dragons
 
-initScreen level (Playing robot) = do
+initScreen level Playing {robot = robot} = do
     hSetBuffering stdin NoBuffering
     hSetBuffering stdout NoBuffering
     hSetEcho stdin False
@@ -130,20 +132,25 @@ drawItem (NKI representation position) = draw representation position
 draw char (row, col) = do
     setCursorPosition row col
     putChar char
-    setCursorPosition 26 0
 
 drawR = draw '#'
 drawK = draw 'k'
 drawS = draw 's'
 clear = draw ' '
 
-clearState Playing { robot = robotPosition } = do clear robotPosition
+clearState Playing { robot = robotPosition } = do
+    clear robotPosition
+    setCursorPosition 26 0
+    clearLine
+
 clearState _ = do return ()
 
-drawState Playing { robot = robotPosition } = do drawR robotPosition
+drawState Playing { robot = robotPosition, message = message } = do
+    drawR robotPosition
+    setCursorPosition 26 0
+    putStr message
 drawState Over = do putStrLn "Goodbye!"
 drawState FoundKitten = do putStrLn "Aww! You found a kitten!"
-drawState FoundNKI = do putStr "Just a useless gray rock."
 
 updateScreen (oldState, newState) = do
   clearState oldState
@@ -166,7 +173,7 @@ generateLevel = do
 main :: IO ()
 main = do
     level <- generateLevel
-    let gameState = Playing (12, 40)
+    let gameState = Playing { robot = (12, 40), message = "" }
     initScreen level gameState
     userInput <- getContents
     forM_ (transitions $ playGame level userInput gameState) updateScreen
