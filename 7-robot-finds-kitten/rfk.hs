@@ -8,6 +8,7 @@ import System.Random
 type Position = (Int, Int)
 
 data GameState = Playing Position
+               -- TODO these things shouldn't all be one single GameState
                | FoundKitten
                | FoundNKI
                | Over deriving (Eq)
@@ -52,6 +53,7 @@ moveRobot level (rowDelta, colDelta) (Playing (row, col)) =
 positions :: [Item] -> [Position]
 positions = map position
 
+-- TODO duplication!
 advance :: Level -> GameState -> Command -> [GameState]
 advance level state MoveLeft = moveRobot level (0, -1) state
 advance level state MoveUp = moveRobot level (-1, 0) state
@@ -60,6 +62,7 @@ advance level state MoveRight = moveRobot level (0, 1) state
 advance _ _ Quit = [Over]
 advance _ state _ = [state]
 
+-- TODO this is a bit of a hack
 -- |like scanl, but one trip through the function can produce multiple
 -- >>> chunkyscanl (\ latest new -> [latest + new]) 0 [1,2,3]
 -- [0,1,3,6]
@@ -71,6 +74,7 @@ chunkyscanl f q ls =  q : (case ls of
                      x:xs -> let nextchunk = f q x in
                              (init nextchunk) ++ chunkyscanl f (last nextchunk) xs)
 
+-- TODO this is also a bit of a hack
 -- |Show a simple representation of a series of gameplay states
 diagram :: [GameState] -> String
 diagram = intercalate " -> " . map (\ state -> case state of
@@ -106,6 +110,7 @@ takeThrough p (x:xs)
               | not (p x) = x : takeThrough p xs
               | otherwise = [x]
 
+-- TODO this is, frankly, also a bit of a hack
 transitions :: [a] -> [(a, a)]
 transitions list = zip ([head list] ++ list) list
 
@@ -134,6 +139,7 @@ clear = draw ' '
 
 updateScreen (_, Over) = do putStrLn "Goodbye!"
 updateScreen (_, FoundKitten) = do putStrLn "Aww! You found a kitten!"
+-- TODO put the message somewhere closer to the NKI
 updateScreen (_, FoundNKI) = do putStr "Just a useless gray rock."
 updateScreen (FoundNKI, _) = do return ()
 updateScreen (Playing oldState, Playing newState) = do
