@@ -1,10 +1,10 @@
 # DONE
 
 * New object has a different description.
+* Both NKIs have random locations.
 
 # WIP
 
-* Both NKIs have random locations.
 
 # TODO
 

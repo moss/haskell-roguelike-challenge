@@ -145,10 +145,10 @@ takeRandomPositions count = do
 
 generateLevel = do
     [kittenChar, stoneChar, scriptsChar] <- takeRandom 3 ('A', 'z')
-    [kittenPos, stonePos] <- takeRandomPositions 2
+    [kittenPos, stonePos, scriptsPos] <- takeRandomPositions 3
     return [ Kitten kittenChar kittenPos
            , NKI stoneChar stonePos "Just a useless gray rock."
-           , NKI scriptsChar (6, 42) "The complete scripts to ST:TNG season 4."
+           , NKI scriptsChar scriptsPos "The complete scripts to ST:TNG season 4."
            ]
 
 main :: IO ()
