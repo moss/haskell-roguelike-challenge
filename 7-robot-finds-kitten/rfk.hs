@@ -134,8 +134,6 @@ draw char (row, col) = do
     putChar char
 
 drawR = draw '#'
-drawK = draw 'k'
-drawS = draw 's'
 clear = draw ' '
 
 clearState Playing { robot = robotPosition } = do
