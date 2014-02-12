@@ -139,13 +139,13 @@ takeRandom count range = do
     return $ take count $ randomRs range g
 
 generateLevel = do
-    [kittenChar, stoneChar, otherStoneChar] <- takeRandom 3 ('A', 'z')
+    [kittenChar, stoneChar, scriptsChar] <- takeRandom 3 ('A', 'z')
     randomRows <- takeRandom 2 (0, 25)
     randomCols <- takeRandom 2 (0, 80)
     let [kittenPos, stonePos] = zip randomRows randomCols
     return [ Kitten kittenChar kittenPos
            , NKI stoneChar stonePos "Just a useless gray rock."
-           , NKI otherStoneChar (6, 42) "Just a useless gray rock."
+           , NKI scriptsChar (6, 42) "The complete scripts to ST:TNG season 4."
            ]
 
 main :: IO ()

@@ -1,9 +1,9 @@
 # DONE
 
+* New object has a different description.
 
 # WIP
 
-* New object has a different description.
 
 # TODO
 
