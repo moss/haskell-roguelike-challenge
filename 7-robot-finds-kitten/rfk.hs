@@ -38,39 +38,27 @@ parseCommand _ = Unknown
 itemAt :: Position -> [Item] -> Maybe Item
 itemAt pos = find (\ item -> (position item) == pos)
 
-moveRobot :: Level -> (Int, Int) -> GameState -> [GameState]
+moveRobot :: Level -> (Int, Int) -> GameState -> GameState
 moveRobot level (rowDelta, colDelta) curState =
     let (row, col) = robot curState in
     let newR = (row + rowDelta, col + colDelta) in
     let itemInTheWay = itemAt newR in
     case itemAt newR level of
-      Just (Kitten _ _) -> [curState { message = "Aww! You found a kitten!", over = True }]
-      Just (NKI _ _) -> [curState { message = "Just a useless gray rock."}]
-      Nothing -> [curState { robot = newR, message = "" }]
+      Just (Kitten _ _) -> curState { message = "Aww! You found a kitten!", over = True }
+      Just (NKI _ _) -> curState { message = "Just a useless gray rock."}
+      Nothing -> curState { robot = newR, message = "" }
 
 positions :: [Item] -> [Position]
 positions = map position
 
 -- TODO duplication!
-advance :: Level -> GameState -> Command -> [GameState]
+advance :: Level -> GameState -> Command -> GameState
 advance level state MoveLeft = moveRobot level (0, -1) state
 advance level state MoveUp = moveRobot level (-1, 0) state
 advance level state MoveDown = moveRobot level (1, 0) state
 advance level state MoveRight = moveRobot level (0, 1) state
-advance _ state Quit = [state { message = "Goodbye!", over = True }]
-advance _ state _ = [state]
-
--- TODO this is a bit of a hack
--- |like scanl, but one trip through the function can produce multiple
--- >>> chunkyscanl (\ latest new -> [latest + new]) 0 [1,2,3]
--- [0,1,3,6]
--- >>> chunkyscanl (\ latest new -> [9, latest + new]) 0 [1,2,3]
--- [0,9,1,9,3,9,6]
-chunkyscanl :: (a -> b -> [a]) -> a -> [b] -> [a]
-chunkyscanl f q ls =  q : (case ls of
-                     []   -> []
-                     x:xs -> let nextchunk = f q x in
-                             (init nextchunk) ++ chunkyscanl f (last nextchunk) xs)
+advance _ state Quit = state { message = "Goodbye!", over = True }
+advance _ state _ = state
 
 -- TODO this is also a bit of a hack
 -- |Show a simple representation of a series of gameplay states
@@ -82,8 +70,6 @@ diagram = intercalate " -> " . map (\ state -> case state of
 
 playing robotPosition = Playing { robot = robotPosition, message = "", over = False }
 
-isOver gameState = over gameState
-
 -- |Play a game
 -- >>> diagram $ playGame [Kitten 'k' (5,5)] ['h', 'q'] (playing (2,2))
 -- "(2,2) -> (2,1) -> Goodbye!"
@@ -94,8 +80,8 @@ isOver gameState = over gameState
 -- >>> diagram $ playGame [NKI 's' (2,1)] ['h', 'l'] (playing (2,2))
 -- "(2,2) -> Just a useless gray rock. -> (2,3)"
 playGame :: Level -> [Char] -> GameState -> [GameState]
-playGame level userInput initState = takeThrough isOver $
-    chunkyscanl (advance level) initState $
+playGame level userInput initState = takeThrough over $
+    scanl (advance level) initState $
     parseInput userInput
 
 -- |takeThrough, applied to a predicate @p@ and a list @xs@, returns the
