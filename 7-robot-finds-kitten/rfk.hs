@@ -7,10 +7,10 @@ import System.Random
 
 type Position = (Int, Int)
 
-data GameState = Playing { robot :: Position, message :: String }
+data GameState = Playing { robot :: Position, message :: String, over :: Bool }
                -- TODO these things shouldn't all be one single GameState
                | FoundKitten
-               | Over deriving (Eq)
+               deriving (Eq)
 
 data Command = MoveLeft
              | MoveDown
@@ -48,7 +48,7 @@ moveRobot level (rowDelta, colDelta) curState =
     case itemAt newR level of
       Just (Kitten _ _) -> [FoundKitten]
       Just (NKI _ _) -> [curState { message = "Just a useless gray rock."}]
-      Nothing -> [Playing { robot = newR, message = "" }]
+      Nothing -> [curState { robot = newR, message = "" }]
 
 positions :: [Item] -> [Position]
 positions = map position
@@ -59,7 +59,7 @@ advance level state MoveLeft = moveRobot level (0, -1) state
 advance level state MoveUp = moveRobot level (-1, 0) state
 advance level state MoveDown = moveRobot level (1, 0) state
 advance level state MoveRight = moveRobot level (0, 1) state
-advance _ _ Quit = [Over]
+advance _ state Quit = [state { message = "Goodbye!", over = True }]
 advance _ state _ = [state]
 
 -- TODO this is a bit of a hack
@@ -78,13 +78,15 @@ chunkyscanl f q ls =  q : (case ls of
 -- |Show a simple representation of a series of gameplay states
 diagram :: [GameState] -> String
 diagram = intercalate " -> " . map (\ state -> case state of
+                          Playing { over = True } -> "Over"
                           Playing { robot = robot, message = "" } -> show robot
                           Playing { message = message } -> message
                           FoundKitten -> "Kitten"
-                          Over -> "Over"
                           )
 
-playing robotPosition = Playing { robot = robotPosition, message = "" }
+playing robotPosition = Playing { robot = robotPosition, message = "", over = False }
+
+isOver gameState = (gameState == FoundKitten) || (over gameState)
 
 -- |Play a game
 -- >>> diagram $ playGame [Kitten 'k' (5,5)] ['h', 'q'] (playing (2,2))
@@ -96,7 +98,7 @@ playing robotPosition = Playing { robot = robotPosition, message = "" }
 -- >>> diagram $ playGame [NKI 's' (2,1)] ['h', 'l'] (playing (2,2))
 -- "(2,2) -> Just a useless gray rock. -> (2,3)"
 playGame :: Level -> [Char] -> GameState -> [GameState]
-playGame level userInput initState = takeThrough (flip elem [Over, FoundKitten]) $
+playGame level userInput initState = takeThrough isOver $
     chunkyscanl (advance level) initState $
     parseInput userInput
 
@@ -147,7 +149,6 @@ drawState Playing { robot = robotPosition, message = message } = do
     drawR robotPosition
     setCursorPosition 26 0
     putStr message
-drawState Over = do putStrLn "Goodbye!"
 drawState FoundKitten = do putStrLn "Aww! You found a kitten!"
 
 updateScreen (oldState, newState) = do
@@ -171,7 +172,8 @@ generateLevel = do
 main :: IO ()
 main = do
     level <- generateLevel
-    let gameState = Playing { robot = (12, 40), message = "" }
+    let gameState = Playing { robot = (12, 40), message = "", over = False }
     initScreen level gameState
     userInput <- getContents
     forM_ (transitions $ playGame level userInput gameState) updateScreen
+    putStrLn ""
