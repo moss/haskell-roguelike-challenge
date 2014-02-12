@@ -8,8 +8,6 @@ import System.Random
 type Position = (Int, Int)
 
 data GameState = Playing { robot :: Position, message :: String, over :: Bool }
-               -- TODO these things shouldn't all be one single GameState
-               | FoundKitten
                deriving (Eq)
 
 data Command = MoveLeft
@@ -46,7 +44,7 @@ moveRobot level (rowDelta, colDelta) curState =
     let newR = (row + rowDelta, col + colDelta) in
     let itemInTheWay = itemAt newR in
     case itemAt newR level of
-      Just (Kitten _ _) -> [FoundKitten]
+      Just (Kitten _ _) -> [curState { message = "Aww! You found a kitten!", over = True }]
       Just (NKI _ _) -> [curState { message = "Just a useless gray rock."}]
       Nothing -> [curState { robot = newR, message = "" }]
 
@@ -78,22 +76,20 @@ chunkyscanl f q ls =  q : (case ls of
 -- |Show a simple representation of a series of gameplay states
 diagram :: [GameState] -> String
 diagram = intercalate " -> " . map (\ state -> case state of
-                          Playing { over = True } -> "Over"
                           Playing { robot = robot, message = "" } -> show robot
                           Playing { message = message } -> message
-                          FoundKitten -> "Kitten"
                           )
 
 playing robotPosition = Playing { robot = robotPosition, message = "", over = False }
 
-isOver gameState = (gameState == FoundKitten) || (over gameState)
+isOver gameState = over gameState
 
 -- |Play a game
 -- >>> diagram $ playGame [Kitten 'k' (5,5)] ['h', 'q'] (playing (2,2))
--- "(2,2) -> (2,1) -> Over"
+-- "(2,2) -> (2,1) -> Goodbye!"
 --
 -- >>> diagram $ playGame [Kitten 'k' (2,1)] ['h', 'l'] (playing (2,2))
--- "(2,2) -> Kitten"
+-- "(2,2) -> Aww! You found a kitten!"
 --
 -- >>> diagram $ playGame [NKI 's' (2,1)] ['h', 'l'] (playing (2,2))
 -- "(2,2) -> Just a useless gray rock. -> (2,3)"
@@ -143,13 +139,10 @@ clearState Playing { robot = robotPosition } = do
     setCursorPosition 26 0
     clearLine
 
-clearState _ = do return ()
-
 drawState Playing { robot = robotPosition, message = message } = do
     drawR robotPosition
     setCursorPosition 26 0
     putStr message
-drawState FoundKitten = do putStrLn "Aww! You found a kitten!"
 
 updateScreen (oldState, newState) = do
   clearState oldState
