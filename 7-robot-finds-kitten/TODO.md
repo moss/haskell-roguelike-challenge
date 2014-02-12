@@ -4,10 +4,10 @@
 
 # WIP
 
+* Both NKIs have random locations.
 
 # TODO
 
-* Both NKIs have random locations.
 * One NKI has a random description.
 * There are three NKIs.
 * All NKIs have random descriptions.

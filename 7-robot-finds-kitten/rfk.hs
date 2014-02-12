@@ -138,11 +138,14 @@ takeRandom count range = do
     g <- newStdGen
     return $ take count $ randomRs range g
 
+takeRandomPositions count = do
+    randomRows <- takeRandom count (0, 25)
+    randomCols <- takeRandom count (0, 80)
+    return $ zip randomRows randomCols
+
 generateLevel = do
     [kittenChar, stoneChar, scriptsChar] <- takeRandom 3 ('A', 'z')
-    randomRows <- takeRandom 2 (0, 25)
-    randomCols <- takeRandom 2 (0, 80)
-    let [kittenPos, stonePos] = zip randomRows randomCols
+    [kittenPos, stonePos] <- takeRandomPositions 2
     return [ Kitten kittenChar kittenPos
            , NKI stoneChar stonePos "Just a useless gray rock."
            , NKI scriptsChar (6, 42) "The complete scripts to ST:TNG season 4."
