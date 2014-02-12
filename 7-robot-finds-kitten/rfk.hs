@@ -7,7 +7,7 @@ import System.Random
 
 type Position = (Int, Int)
 
-data GameState = Playing Position
+data GameState = Playing { robot :: Position }
                -- TODO these things shouldn't all be one single GameState
                | FoundKitten
                | FoundNKI
@@ -42,7 +42,7 @@ itemAt :: Position -> [Item] -> Maybe Item
 itemAt pos = find (\ item -> (position item) == pos)
 
 moveRobot :: Level -> (Int, Int) -> GameState -> [GameState]
-moveRobot level (rowDelta, colDelta) (Playing (row, col)) =
+moveRobot level (rowDelta, colDelta) Playing { robot = (row, col) } =
     let newR = (row + rowDelta, col + colDelta) in
     let itemInTheWay = itemAt newR in
     case itemAt newR level of
@@ -78,7 +78,7 @@ chunkyscanl f q ls =  q : (case ls of
 -- |Show a simple representation of a series of gameplay states
 diagram :: [GameState] -> String
 diagram = intercalate " -> " . map (\ state -> case state of
-                                                Playing robot -> show robot
+                                                Playing { robot = robot } -> show robot
                                                 FoundKitten -> "Kitten"
                                                 FoundNKI -> "NKI"
                                                 Over -> "Over"
@@ -137,14 +137,17 @@ drawK = draw 'k'
 drawS = draw 's'
 clear = draw ' '
 
-updateScreen (_, Over) = do putStrLn "Goodbye!"
-updateScreen (_, FoundKitten) = do putStrLn "Aww! You found a kitten!"
--- TODO put the message somewhere closer to the NKI
-updateScreen (_, FoundNKI) = do putStr "Just a useless gray rock."
-updateScreen (FoundNKI, _) = do return ()
-updateScreen (Playing oldState, Playing newState) = do
-  clear oldState
-  drawR newState
+clearState Playing { robot = robotPosition } = do clear robotPosition
+clearState _ = do return ()
+
+drawState Playing { robot = robotPosition } = do drawR robotPosition
+drawState Over = do putStrLn "Goodbye!"
+drawState FoundKitten = do putStrLn "Aww! You found a kitten!"
+drawState FoundNKI = do putStr "Just a useless gray rock."
+
+updateScreen (oldState, newState) = do
+  clearState oldState
+  drawState newState
 
 takeRandom count range = do
     g <- newStdGen
