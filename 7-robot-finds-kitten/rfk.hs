@@ -19,7 +19,7 @@ data Command = MoveLeft
              deriving (Eq)
 
 data Item = Kitten { representation :: Char, position :: Position }
-          | NKI { representation :: Char, position :: Position }
+          | NKI { representation :: Char, position :: Position, description :: String }
           deriving (Eq)
 
 type Level = [Item]
@@ -45,7 +45,7 @@ moveRobot level (rowDelta, colDelta) curState =
     let itemInTheWay = itemAt newR in
     case itemAt newR level of
       Just (Kitten _ _) -> curState { message = "Aww! You found a kitten!", over = True }
-      Just (NKI _ _) -> curState { message = "Just a useless gray rock."}
+      Just (NKI _ _ description) -> curState { message = description }
       Nothing -> curState { robot = newR, message = "" }
 
 positions :: [Item] -> [Position]
@@ -77,8 +77,8 @@ playing robotPosition = Playing { robot = robotPosition, message = "", over = Fa
 -- >>> diagram $ playGame [Kitten 'k' (2,1)] ['h', 'l'] (playing (2,2))
 -- "(2,2) -> Aww! You found a kitten!"
 --
--- >>> diagram $ playGame [NKI 's' (2,1)] ['h', 'l'] (playing (2,2))
--- "(2,2) -> Just a useless gray rock. -> (2,3)"
+-- >>> diagram $ playGame [NKI 's' (2,1) "Alf."] ['h', 'l'] (playing (2,2))
+-- "(2,2) -> Alf. -> (2,3)"
 playGame :: Level -> [Char] -> GameState -> [GameState]
 playGame level userInput initState = takeThrough over $
     scanl (advance level) initState $
@@ -111,7 +111,7 @@ initScreen level Playing {robot = robot} = do
     mapM_ drawItem level
 
 drawItem (Kitten representation position) = draw representation position
-drawItem (NKI representation position) = draw representation position
+drawItem (NKI representation position message) = draw representation position
 
 draw char (row, col) = do
     setCursorPosition row col
@@ -144,8 +144,8 @@ generateLevel = do
     randomCols <- takeRandom 2 (0, 80)
     let [kittenPos, stonePos] = zip randomRows randomCols
     return [ Kitten kittenChar kittenPos
-           , NKI stoneChar stonePos
-           , NKI otherStoneChar (6, 42)
+           , NKI stoneChar stonePos "Just a useless gray rock."
+           , NKI otherStoneChar (6, 42) "Just a useless gray rock."
            ]
 
 main :: IO ()
