@@ -3,10 +3,10 @@
 * New object has a different description.
 * Both NKIs have random locations.
 * One NKI has a random description.
+* All NKIs have random descriptions.
 
 # WIP
 
-* All NKIs have random descriptions.
 
 # TODO
 
