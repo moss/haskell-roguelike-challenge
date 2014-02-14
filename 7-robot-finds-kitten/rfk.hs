@@ -161,7 +161,7 @@ shuffle xs = do
     newArray :: Int -> [a] -> IO (IOArray Int a)
     newArray n xs =  newListArray (1,n) xs
 
-randomDescriptions count = do
+takeRandomDescriptions count = do
     let options = [ "Just a useless gray rock."
                   , "A kitten the size of a house."
                   , "Five pounds of flax."
@@ -172,7 +172,7 @@ randomDescriptions count = do
 generateLevel = do
     [kittenChar, stoneChar, scriptsChar] <- takeRandom 3 ('A', 'z')
     [kittenPos, stonePos, scriptsPos] <- takeRandomPositions 3
-    [stoneDesc] <- randomDescriptions 1
+    [stoneDesc] <- takeRandomDescriptions 1
     return [ Kitten kittenChar kittenPos
            , NKI stoneChar stonePos stoneDesc
            , NKI scriptsChar scriptsPos "The complete scripts to ST:TNG season 4."
