@@ -6,11 +6,11 @@
 
 # WIP
 
+* All NKIs have random descriptions.
 
 # TODO
 
 * There are three NKIs.
-* All NKIs have random descriptions.
 * There are a random number of NKIs. &lt;--- Release goal
 * Robot has a random starting location.
 * Ensure no accidentally overlapping objects.
