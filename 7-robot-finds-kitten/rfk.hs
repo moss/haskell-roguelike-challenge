@@ -45,7 +45,7 @@ moveRobot level (rowDelta, colDelta) curState =
     let newR = (row + rowDelta, col + colDelta) in
     let itemInTheWay = itemAt newR in
     case itemAt newR level of
-      Just (Kitten _ _) -> curState { message = "Aww! You found a kitten!", over = True }
+      Just (Kitten _ _) -> curState { message = "You found kitten! Way to go, robot!", over = True }
       Just (NKI _ _ description) -> curState { message = description }
       Nothing -> curState { robot = newR, message = "" }
 
@@ -76,7 +76,7 @@ playing robotPosition = Playing { robot = robotPosition, message = "", over = Fa
 -- "(2,2) -> (2,1) -> Goodbye!"
 --
 -- >>> diagram $ playGame [Kitten 'k' (2,1)] ['h', 'l'] (playing (2,2))
--- "(2,2) -> Aww! You found a kitten!"
+-- "(2,2) -> You found kitten! Way to go, robot!"
 --
 -- >>> diagram $ playGame [NKI 's' (2,1) "Alf."] ['h', 'l'] (playing (2,2))
 -- "(2,2) -> Alf. -> (2,3)"
@@ -211,14 +211,15 @@ takeRandomItems count = do
 generateLevel = do
     [kittenChar] <- takeRandom 1 ('A', 'z')
     [kittenPos] <- takeRandomPositions 1
-    [randomItemCount] <- takeRandom 1 (3, length nonKittenItemDescriptions)
+    [randomItemCount] <- takeRandom 1 (3, 15)
     nonKittenItems <- takeRandomItems randomItemCount
     return $ (Kitten kittenChar kittenPos):nonKittenItems
 
 main :: IO ()
 main = do
     level <- generateLevel
-    let gameState = Playing { robot = (12, 40), message = "", over = False }
+    [robotPos] <- takeRandomPositions 1
+    let gameState = Playing { robot = robotPos, message = "", over = False }
     initScreen level gameState
     userInput <- getContents
     forM_ (transitions $ playGame level userInput gameState) updateScreen

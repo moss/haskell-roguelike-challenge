@@ -6,14 +6,14 @@
 * All NKIs have random descriptions.
 * There are three NKIs.
 * There are a random number of NKIs. &lt;--- Release goal
+* Standards-compliant success message.
+* Robot has a random starting location.
 
 # WIP
 
 
 # TODO
 
-* Standards-compliant success message.
-* Robot has a random starting location.
 * Read NKIs from a file.
 * Ensure no accidentally overlapping objects.
 * Standards-compliant instruction screen.
