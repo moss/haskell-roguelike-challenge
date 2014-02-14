@@ -2,13 +2,13 @@
 
 * New object has a different description.
 * Both NKIs have random locations.
+* One NKI has a random description.
 
 # WIP
 
 
 # TODO
 
-* One NKI has a random description.
 * There are three NKIs.
 * All NKIs have random descriptions.
 * There are a random number of NKIs. &lt;--- Release goal

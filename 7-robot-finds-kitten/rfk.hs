@@ -1,5 +1,6 @@
 module RobotFindsKitten where
 import Control.Monad
+import Data.Array.IO
 import Data.List
 import System.Console.ANSI
 import System.IO
@@ -143,11 +144,37 @@ takeRandomPositions count = do
     randomCols <- takeRandom count (0, 80)
     return $ zip randomRows randomCols
 
+-- | Randomly shuffle a list
+--   /O(N)/
+-- Cribbed from http://www.haskell.org/haskellwiki/Random_shuffle
+shuffle :: [a] -> IO [a]
+shuffle xs = do
+        ar <- newArray n xs
+        forM [1..n] $ \i -> do
+            j <- randomRIO (i,n)
+            vi <- readArray ar i
+            vj <- readArray ar j
+            writeArray ar j vi
+            return vj
+  where
+    n = length xs
+    newArray :: Int -> [a] -> IO (IOArray Int a)
+    newArray n xs =  newListArray (1,n) xs
+
+randomDescriptions count = do
+    let options = [ "Just a useless gray rock."
+                  , "A kitten the size of a house."
+                  , "Five pounds of flax."
+                  ]
+    shuffled <- shuffle options
+    return $ take count shuffled
+
 generateLevel = do
     [kittenChar, stoneChar, scriptsChar] <- takeRandom 3 ('A', 'z')
     [kittenPos, stonePos, scriptsPos] <- takeRandomPositions 3
+    [stoneDesc] <- randomDescriptions 1
     return [ Kitten kittenChar kittenPos
-           , NKI stoneChar stonePos "Just a useless gray rock."
+           , NKI stoneChar stonePos stoneDesc
            , NKI scriptsChar scriptsPos "The complete scripts to ST:TNG season 4."
            ]
 
