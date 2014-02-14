@@ -163,19 +163,26 @@ shuffle xs = do
 
 takeRandomDescriptions count = do
     let options = [ "Just a useless gray rock."
-                  , "A kitten the size of a house."
+                  , "A giant statue of a kitten."
                   , "Five pounds of flax."
                   ]
     shuffled <- shuffle options
     return $ take count shuffled
 
+takeRandomItems count = do
+    representations <- takeRandom count ('A', 'z')
+    positions <- takeRandomPositions count
+    descriptions <- takeRandomDescriptions count
+    let makeNKI (r,p,d) = NKI r p d
+    return $ map makeNKI $ zip3 representations positions descriptions
+
 generateLevel = do
-    [kittenChar, stoneChar, scriptsChar] <- takeRandom 3 ('A', 'z')
-    [kittenPos, stonePos, scriptsPos] <- takeRandomPositions 3
-    [stoneDesc] <- takeRandomDescriptions 1
+    [kittenChar] <- takeRandom 1 ('A', 'z')
+    [kittenPos] <- takeRandomPositions 1
+    [stone, scripts] <- takeRandomItems 2
     return [ Kitten kittenChar kittenPos
-           , NKI stoneChar stonePos stoneDesc
-           , NKI scriptsChar scriptsPos "The complete scripts to ST:TNG season 4."
+           , stone
+           , scripts
            ]
 
 main :: IO ()
