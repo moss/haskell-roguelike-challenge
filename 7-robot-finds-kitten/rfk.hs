@@ -179,11 +179,8 @@ takeRandomItems count = do
 generateLevel = do
     [kittenChar] <- takeRandom 1 ('A', 'z')
     [kittenPos] <- takeRandomPositions 1
-    [stone, scripts] <- takeRandomItems 2
-    return [ Kitten kittenChar kittenPos
-           , stone
-           , scripts
-           ]
+    nonKittenItems <- takeRandomItems 3
+    return $ (Kitten kittenChar kittenPos):nonKittenItems
 
 main :: IO ()
 main = do

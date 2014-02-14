@@ -4,13 +4,13 @@
 * Both NKIs have random locations.
 * One NKI has a random description.
 * All NKIs have random descriptions.
+* There are three NKIs.
 
 # WIP
 
 
 # TODO
 
-* There are three NKIs.
 * There are a random number of NKIs. &lt;--- Release goal
 * Robot has a random starting location.
 * Ensure no accidentally overlapping objects.
