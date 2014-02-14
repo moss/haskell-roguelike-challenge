@@ -161,12 +161,44 @@ shuffle xs = do
     newArray :: Int -> [a] -> IO (IOArray Int a)
     newArray n xs =  newListArray (1,n) xs
 
+nonKittenItemDescriptions =
+    [ "Just a useless gray rock."
+    , "A giant statue of a kitten."
+    , "Five pounds of flax."
+    , "I pity the fool who mistakes me for kitten!\", sez Mr. T."
+    , "That's just an old tin can."
+    , "It's an altar to the horse god."
+    , "A box of dancing mechanical pencils. They dance! They sing!"
+    , "It's an old Duke Ellington record."
+    , "A box of fumigation pellets."
+    , "A digital clock. It's stuck at 2:17 PM."
+    , "That's just a charred human corpse."
+    , "I don't know what that is, but it's not kitten."
+    , "An empty shopping bag. Paper or plastic?"
+    , "Could it be... a big ugly bowling trophy?"
+    , "A coat hanger hovers in thin air. Odd."
+    , "Not kitten, just a packet of Kool-Aid(tm)."
+    , "A freshly-baked pumpkin pie."
+    , "A lone, forgotten comma, sits here, sobbing."
+    , "ONE HUNDRED THOUSAND CARPET FIBERS!!!!!"
+    , "It's Richard Nixon's nose!"
+    , "It's Lucy Ricardo. \"Aaaah, Ricky!\", she says."
+    , "You stumble upon Bill Gates' stand-up act."
+    , "Just an autographed copy of the Kama Sutra."
+    , "It's the Will Rogers Highway. Who was Will Rogers, anyway?"
+    , "It's another robot, more advanced in design than you but strangely immobile."
+    , "Leonard Richardson is here, asking people to lick him."
+    , "It's a stupid mask, fashioned after a beagle."
+    , "Your State Farm Insurance(tm) representative!"
+    , "It's the local draft board."
+    , "Seven 1/4\" screws and a piece of plastic."
+    , "An 80286 machine."
+    , "One of those stupid \"Homes of the Stars\" maps."
+    , "A signpost saying \"TO KITTEN\". It points in no particular direction."
+    ]
+
 takeRandomDescriptions count = do
-    let options = [ "Just a useless gray rock."
-                  , "A giant statue of a kitten."
-                  , "Five pounds of flax."
-                  ]
-    shuffled <- shuffle options
+    shuffled <- shuffle nonKittenItemDescriptions
     return $ take count shuffled
 
 takeRandomItems count = do
@@ -179,7 +211,8 @@ takeRandomItems count = do
 generateLevel = do
     [kittenChar] <- takeRandom 1 ('A', 'z')
     [kittenPos] <- takeRandomPositions 1
-    nonKittenItems <- takeRandomItems 3
+    [randomItemCount] <- takeRandom 1 (3, length nonKittenItemDescriptions)
+    nonKittenItems <- takeRandomItems randomItemCount
     return $ (Kitten kittenChar kittenPos):nonKittenItems
 
 main :: IO ()
