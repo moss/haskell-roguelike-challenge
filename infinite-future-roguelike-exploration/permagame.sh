@@ -3,7 +3,7 @@
 yn='y'
 while true; do
     case $yn in
-        [Yy]* ) runhaskell rfk.hs;;
+        [Yy]* ) runhaskell src/rfk.hs;;
         [Nnq]* ) exit;;
         * ) echo "Please answer yes or no.";;
     esac

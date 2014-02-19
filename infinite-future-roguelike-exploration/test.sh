@@ -1,2 +1,2 @@
 #!/bin/sh
-doctest *.hs
+doctest src/*.hs

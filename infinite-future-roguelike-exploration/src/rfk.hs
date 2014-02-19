@@ -1,4 +1,3 @@
-module RobotFindsKitten where
 import Control.Monad
 import Data.Array.IO
 import Data.List
