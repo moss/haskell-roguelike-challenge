@@ -21,3 +21,10 @@ executable rfk
   -- other-modules:       
   build-depends:       base ==4.6.*, random ==1.0.*, ansi-terminal ==0.6,
                        array ==0.4.*
+
+test-suite doctests
+  type:          exitcode-stdio-1.0
+  ghc-options:   -threaded
+  hs-source-dirs: test
+  main-is:        doctests.hs
+  build-depends:  base, doctest >= 0.8
