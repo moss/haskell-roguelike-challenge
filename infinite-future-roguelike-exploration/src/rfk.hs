@@ -160,6 +160,34 @@ shuffle xs = do
     newArray :: Int -> [a] -> IO (IOArray Int a)
     newArray n xs =  newListArray (1,n) xs
 
+takeRandomDescriptions count = do
+    shuffled <- shuffle nonKittenItemDescriptions
+    return $ take count shuffled
+
+takeRandomItems count = do
+    representations <- takeRandom count ('A', 'z')
+    positions <- takeRandomPositions count
+    descriptions <- takeRandomDescriptions count
+    let makeNKI (r,p,d) = NKI r p d
+    return $ map makeNKI $ zip3 representations positions descriptions
+
+generateLevel = do
+    [kittenChar] <- takeRandom 1 ('A', 'z')
+    [kittenPos] <- takeRandomPositions 1
+    [randomItemCount] <- takeRandom 1 (3, 15)
+    nonKittenItems <- takeRandomItems randomItemCount
+    return $ (Kitten kittenChar kittenPos):nonKittenItems
+
+main :: IO ()
+main = do
+    level <- generateLevel
+    [robotPos] <- takeRandomPositions 1
+    let gameState = Playing { robot = robotPos, message = "", over = False }
+    initScreen level gameState
+    userInput <- getContents
+    forM_ (transitions $ playGame level userInput gameState) updateScreen
+    putStrLn ""
+
 nonKittenItemDescriptions =
     [ "Just a useless gray rock."
     , "A giant statue of a kitten."
@@ -195,31 +223,3 @@ nonKittenItemDescriptions =
     , "One of those stupid \"Homes of the Stars\" maps."
     , "A signpost saying \"TO KITTEN\". It points in no particular direction."
     ]
-
-takeRandomDescriptions count = do
-    shuffled <- shuffle nonKittenItemDescriptions
-    return $ take count shuffled
-
-takeRandomItems count = do
-    representations <- takeRandom count ('A', 'z')
-    positions <- takeRandomPositions count
-    descriptions <- takeRandomDescriptions count
-    let makeNKI (r,p,d) = NKI r p d
-    return $ map makeNKI $ zip3 representations positions descriptions
-
-generateLevel = do
-    [kittenChar] <- takeRandom 1 ('A', 'z')
-    [kittenPos] <- takeRandomPositions 1
-    [randomItemCount] <- takeRandom 1 (3, 15)
-    nonKittenItems <- takeRandomItems randomItemCount
-    return $ (Kitten kittenChar kittenPos):nonKittenItems
-
-main :: IO ()
-main = do
-    level <- generateLevel
-    [robotPos] <- takeRandomPositions 1
-    let gameState = Playing { robot = robotPos, message = "", over = False }
-    initScreen level gameState
-    userInput <- getContents
-    forM_ (transitions $ playGame level userInput gameState) updateScreen
-    putStrLn ""
