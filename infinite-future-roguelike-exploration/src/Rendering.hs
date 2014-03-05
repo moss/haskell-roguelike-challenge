@@ -10,7 +10,7 @@ initScreen level Playing {robot = robot} = do
     hSetBuffering stdout NoBuffering
     hSetEcho stdin False
     clearScreen
-    drawR robot
+    drawRobot robot
     mapM_ drawItem level
 
 drawItem (Kitten representation position) = draw representation position
@@ -20,18 +20,20 @@ draw char (row, col) = do
     setCursorPosition row col
     putChar char
 
-drawR = draw '#'
-clear = draw ' '
+drawRobot = draw '#'
+clearRobot = draw ' '
+
+goToMessage = setCursorPosition 26 0
+clearMessage = do goToMessage; clearLine
+drawMessage m = do goToMessage; putStr m
 
 clearState Playing { robot = robotPosition } = do
-    clear robotPosition
-    setCursorPosition 26 0
-    clearLine
+    clearRobot robotPosition
+    clearMessage
 
 drawState Playing { robot = robotPosition, message = message } = do
-    drawR robotPosition
-    setCursorPosition 26 0
-    putStr message
+    drawRobot robotPosition
+    drawMessage message
 
 updateScreen (oldState, newState) = do
   clearState oldState
