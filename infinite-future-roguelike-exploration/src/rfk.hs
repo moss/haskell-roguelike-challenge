@@ -16,8 +16,8 @@ main :: IO ()
 main = do
     level <- generateLevel
     [robotPos] <- takeRandomPositions 1
-    let gameState = Playing { robot = robotPos, message = "", over = False }
-    initScreen level gameState
+    let gameState = Playing { robot = robotPos, message = "", over = False, level = level }
+    initScreen gameState
     userInput <- getContents
-    forM_ (transitions $ playGame level (parseInput userInput) gameState) updateScreen
+    forM_ (transitions $ playGame (parseInput userInput) gameState) updateScreen
     putStrLn ""

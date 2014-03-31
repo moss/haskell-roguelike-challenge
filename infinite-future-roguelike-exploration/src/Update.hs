@@ -19,12 +19,12 @@ takeThrough p (x:xs)
 itemAt :: Position -> [Item] -> Maybe Item
 itemAt pos = find (\ item -> (position item) == pos)
 
-moveRobot :: Level -> (Int, Int) -> GameState -> GameState
-moveRobot level (rowDelta, colDelta) curState =
+moveRobot :: (Int, Int) -> GameState -> GameState
+moveRobot (rowDelta, colDelta) curState =
     let (row, col) = robot curState in
     let newR = (row + rowDelta, col + colDelta) in
-    let itemInTheWay = itemAt newR in
-    case itemAt newR level of
+    let itemInTheWay = itemAt newR (level curState) in
+    case itemInTheWay of
       Just (Kitten _ _) -> curState { message = "You found kitten! Way to go, robot!", over = True }
       Just (NKI _ _ description) -> curState { message = description }
       Nothing -> curState { robot = newR, message = "" }
@@ -33,13 +33,13 @@ positions :: [Item] -> [Position]
 positions = map position
 
 -- TODO duplication!
-advance :: Level -> GameState -> Command -> GameState
-advance level state MoveLeft = moveRobot level (0, -1) state
-advance level state MoveUp = moveRobot level (-1, 0) state
-advance level state MoveDown = moveRobot level (1, 0) state
-advance level state MoveRight = moveRobot level (0, 1) state
-advance _ state Quit = state { message = "Goodbye!", over = True }
-advance _ state _ = state
+advance :: GameState -> Command -> GameState
+advance state MoveLeft = moveRobot (0, -1) state
+advance state MoveUp = moveRobot (-1, 0) state
+advance state MoveDown = moveRobot (1, 0) state
+advance state MoveRight = moveRobot (0, 1) state
+advance state Quit = state { message = "Goodbye!", over = True }
+advance state _ = state
 
 -- TODO this is also a bit of a hack
 -- |Show a simple representation of a series of gameplay states
@@ -49,19 +49,19 @@ diagram = intercalate " -> " . map (\ state -> case state of
                           Playing { message = message } -> message
                           )
 
-playing robotPosition = Playing { robot = robotPosition, message = "", over = False }
+playing robotPosition level = Playing { robot = robotPosition, message = "", over = False, level = level }
 
 -- |Play a game
--- >>> diagram $ playGame [Kitten 'k' (5,5)] [MoveLeft, Quit] (playing (2,2))
+-- >>> diagram $ playGame [MoveLeft, Quit] (playing (2,2) [Kitten 'k' (5,5)])
 -- "(2,2) -> (2,1) -> Goodbye!"
 --
--- >>> diagram $ playGame [Kitten 'k' (2,1)] [MoveLeft, MoveRight] (playing (2,2))
+-- >>> diagram $ playGame [MoveLeft, MoveRight] (playing (2,2) [Kitten 'k' (2,1)])
 -- "(2,2) -> You found kitten! Way to go, robot!"
 --
--- >>> diagram $ playGame [NKI 's' (2,1) "Alf."] [MoveLeft, MoveRight] (playing (2,2))
+-- >>> diagram $ playGame [MoveLeft, MoveRight] (playing (2,2) [NKI 's' (2,1) "Alf."])
 -- "(2,2) -> Alf. -> (2,3)"
-playGame :: Level -> [Command] -> GameState -> [GameState]
-playGame level userInput initState = takeThrough over $
-    scanl (advance level) initState $
+playGame :: [Command] -> GameState -> [GameState]
+playGame userInput initState = takeThrough over $
+    scanl advance initState $
     userInput
 

@@ -2,7 +2,7 @@ module Model where
 
 type Position = (Int, Int)
 
-data GameState = Playing { robot :: Position, message :: String, over :: Bool }
+data GameState = Playing { robot :: Position, message :: String, over :: Bool, level :: Level }
                deriving (Eq)
 
 data Command = MoveLeft

@@ -5,15 +5,12 @@ import System.IO
 
 import Model
 
-initScreen level startingState = do
+initScreen startingState = do
     hSetBuffering stdin NoBuffering
     hSetBuffering stdout NoBuffering
     hSetEcho stdin False
     clearScreen
-    mapM_ drawElement $ (view startingState) ++ (map itemView level)
-
-itemView (Kitten representation position) = Sprite representation position
-itemView (NKI representation position _) = Sprite representation position
+    renderWith drawElement startingState
 
 draw char (row, col) = do
     setCursorPosition row col
@@ -22,8 +19,13 @@ draw char (row, col) = do
 goToMessage = setCursorPosition 26 0
 
 updateScreen (oldState, newState) = do
-    mapM_ clearElement $ view oldState
-    mapM_ drawElement $ view newState
+    renderWith clearElement oldState
+    renderWith drawElement newState
+
+type Renderer = UiElement -> IO ()
+
+renderWith :: Renderer -> GameState -> IO ()
+renderWith renderer gameState = mapM_ renderer $ view gameState
 
 drawElement :: UiElement -> IO ()
 drawElement (Sprite rep pos) = draw rep pos
@@ -38,10 +40,13 @@ clearElement (Message _) = do
     clearLine
 
 -- |view breaks up a GameState into UiElements
--- >>> view Playing { robot = (3,4), message = "Hi!", over = False }
--- [Sprite '#' (3,4),Message "Hi!"]
+-- >>> view Playing { robot = (3,4), message = "Hi!", over = False, level = [NKI 'x' (5,6) "a duck", Kitten 'k' (7,8)] }
+-- [Sprite 'x' (5,6),Sprite 'k' (7,8),Sprite '#' (3,4),Message "Hi!"]
 view :: GameState -> [UiElement]
-view Playing { robot = r, message = m} = [Sprite '#' r, Message m]
+view Playing { robot = r, message = m, level = l } = (map itemView l) ++ [Sprite '#' r, Message m] 
+
+itemView (Kitten representation position) = Sprite representation position
+itemView (NKI representation position _) = Sprite representation position
 
 data UiElement = Sprite Char Position
                | Message String

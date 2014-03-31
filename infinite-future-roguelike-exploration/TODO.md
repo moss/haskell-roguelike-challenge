@@ -14,6 +14,7 @@
 
 # TODO
 
+* Don't show cursor.
 * Read NKIs from a file.
 * Ensure no accidentally overlapping objects.
 * Standards-compliant instruction screen.
@@ -29,6 +30,7 @@
 * Items with different background colors.
 * Robot is grey.
 * Escape to quit.
+* Extract a library for building new games.
 
 # Notes
 
