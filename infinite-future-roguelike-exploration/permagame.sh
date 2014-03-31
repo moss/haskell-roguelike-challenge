@@ -3,7 +3,7 @@
 yn='y'
 while true; do
     case $yn in
-        [Yy]* ) runhaskell -isrc src/rfk.hs;;
+        [Yy]* ) cabal build && ./dist/build/rfk/rfk ;;
         [Nnq]* ) exit;;
         * ) echo "Please answer yes or no.";;
     esac
