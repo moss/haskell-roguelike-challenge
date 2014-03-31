@@ -18,10 +18,10 @@
 * Ensure no accidentally overlapping objects.
 * Standards-compliant instruction screen.
 * Allow comments in NKI file.
-* You can't move past the top of the screeb.
-* You can't move past the left side of the screeb.
-* You can't move past the right side of the screeb.
-* You can't move past the bottom of the screeb.
+* You can't move past the top of the screen.
+* You can't move past the left side of the screen.
+* You can't move past the right side of the screen.
+* You can't move past the bottom of the screen.
 * Status message appears at bottom of screen, not just line 25.
 * Objects can appear anywhere on the screen, not just 80x25.
 * Move diagonally.
