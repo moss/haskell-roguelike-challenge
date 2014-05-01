@@ -5,6 +5,9 @@ import System.IO
 
 import Model
 
+class GameView a where
+    view :: a -> [UiElement]
+
 initScreen startingState = do
     hSetBuffering stdin NoBuffering
     hSetBuffering stdout NoBuffering
@@ -39,15 +42,15 @@ clearElement (Message _) = do
     goToMessage
     clearLine
 
--- |view breaks up a GameState into UiElements
--- >>> view Playing { robot = (3,4), message = "Hi!", over = False, level = [NKI 'x' (5,6) "a duck", Kitten 'k' (7,8)] }
--- [Sprite 'x' (5,6),Sprite 'k' (7,8),Sprite '#' (3,4),Message "Hi!"]
-view :: GameState -> [UiElement]
-view Playing { robot = r, message = m, level = l } = (map itemView l) ++ [Sprite '#' r, Message m] 
-
-itemView (Kitten representation position) = Sprite representation position
-itemView (NKI representation position _) = Sprite representation position
-
 data UiElement = Sprite Char Position
                | Message String
                deriving (Show, Eq)
+
+instance GameView GameState where
+  -- |view breaks up a GameState into UiElements
+  -- >>> view Playing { robot = (3,4), message = "Hi!", over = False, level = [NKI 'x' (5,6) "a duck", Kitten 'k' (7,8)] }
+  -- [Sprite 'x' (5,6),Sprite 'k' (7,8),Sprite '#' (3,4),Message "Hi!"]
+  view Playing { robot = r, message = m, level = l } = (map itemView l) ++ [Sprite '#' r, Message m] 
+
+itemView (Kitten representation position) = Sprite representation position
+itemView (NKI representation position _) = Sprite representation position

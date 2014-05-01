@@ -1,2 +1,2 @@
 #!/bin/sh
-rerun --no-growl -xp '**/*.hs' cabal test
+rerun -xp '**/*.hs' cabal test

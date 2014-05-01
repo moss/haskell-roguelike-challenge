@@ -11,6 +11,7 @@
 
 # WIP
 
+* Extract generic game framework.
 
 # TODO
 
